@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Download,
   RotateCcw,
   Save,
@@ -48,8 +50,11 @@ export function AvatarStudio() {
   const [status, setStatus] = useState("");
   const previewRef = useRef<HTMLDivElement>(null);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const optionScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [canScrollOptionsUp, setCanScrollOptionsUp] = useState(false);
+  const [canScrollOptionsDown, setCanScrollOptionsDown] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
@@ -85,7 +90,37 @@ export function AvatarStudio() {
     });
   }
 
+  function scrollOptions(direction: "up" | "down") {
+    const el = optionScrollRef.current;
+    if (!el) return;
+    el.scrollBy({
+      top: direction === "up" ? -160 : 160,
+      behavior: "smooth",
+    });
+  }
+
   const options = AVATAR_OPTIONS[category];
+
+  useEffect(() => {
+    const el = optionScrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      setCanScrollOptionsUp(el.scrollTop > 4);
+      setCanScrollOptionsDown(el.scrollTop + el.clientHeight < el.scrollHeight - 4);
+    };
+
+    el.scrollTop = 0;
+    update();
+    const frame = window.requestAnimationFrame(update);
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [category, options.length]);
 
   const previewConfig = useMemo(
     () => ({
@@ -337,42 +372,73 @@ export function AvatarStudio() {
               </button>
             </div>
 
-            <div className="mt-5 max-h-[320px] overflow-y-auto pr-1 option-scroll">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {options.map((option) => {
-                  const selected =
-                    config[category as keyof AvatarConfig] === option.id;
-                  const tone =
-                    "tone" in option
-                      ? (option as { tone?: string }).tone
-                      : undefined;
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() =>
-                        update(
-                          category as keyof AvatarConfig,
-                          option.id as AvatarConfig[keyof AvatarConfig],
-                        )
-                      }
-                      className={cn(
-                        "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
-                        selected
-                          ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
-                          : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
-                      )}
-                    >
-                      {tone && (
-                        <span
-                          className="mb-2 block h-6 w-6 rounded-full border border-[var(--lodge-blue)]/20"
-                          style={{ backgroundColor: tone }}
-                        />
-                      )}
-                      {option.label}
-                    </button>
-                  );
-                })}
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--walnut)]">
+                  Choices
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    aria-label="Scroll choices up"
+                    onClick={() => scrollOptions("up")}
+                    disabled={!canScrollOptionsUp}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] transition enabled:hover:border-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    <ChevronUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Scroll choices down"
+                    onClick={() => scrollOptions("down")}
+                    disabled={!canScrollOptionsDown}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] transition enabled:hover:border-[var(--gold)] disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={optionScrollRef}
+                className="option-scroll max-h-[240px] overflow-y-scroll rounded-2xl border border-[var(--stone)] bg-[color-mix(in_srgb,var(--ivory)_70%,white)] p-3"
+              >
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {options.map((option) => {
+                    const selected =
+                      config[category as keyof AvatarConfig] === option.id;
+                    const tone =
+                      "tone" in option
+                        ? (option as { tone?: string }).tone
+                        : undefined;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() =>
+                          update(
+                            category as keyof AvatarConfig,
+                            option.id as AvatarConfig[keyof AvatarConfig],
+                          )
+                        }
+                        className={cn(
+                          "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
+                          selected
+                            ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
+                            : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
+                        )}
+                      >
+                        {tone && (
+                          <span
+                            className="mb-2 block h-6 w-6 rounded-full border border-[var(--lodge-blue)]/20"
+                            style={{ backgroundColor: tone }}
+                          />
+                        )}
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

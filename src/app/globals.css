@@ -86,27 +86,34 @@ header a.nav-link {
 
 .category-scroll,
 .option-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--gold) color-mix(in srgb, var(--stone) 40%, white);
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: var(--gold) color-mix(in srgb, var(--stone) 45%, white);
 }
 
-.category-scroll::-webkit-scrollbar,
+.category-scroll::-webkit-scrollbar {
+  height: 12px;
+}
+
 .option-scroll::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+  width: 14px;
 }
 
 .category-scroll::-webkit-scrollbar-track,
 .option-scroll::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--stone) 35%, white);
+  background: color-mix(in srgb, var(--stone) 40%, white);
   border-radius: 999px;
 }
 
 .category-scroll::-webkit-scrollbar-thumb,
 .option-scroll::-webkit-scrollbar-thumb {
-  background: var(--gold);
+  background: linear-gradient(180deg, var(--gold), var(--copper));
   border-radius: 999px;
-  border: 2px solid color-mix(in srgb, var(--stone) 35%, white);
+  border: 2px solid color-mix(in srgb, var(--stone) 40%, white);
+}
+
+.option-scroll {
+  overflow-y: scroll !important;
 }
 
 :focus-visible {
