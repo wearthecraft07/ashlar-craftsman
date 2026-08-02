@@ -1,0 +1,65 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
+
+export function Newsletter() {
+  const [email, setEmail] = useState("");
+  const [done, setDone] = useState(false);
+
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (!email.includes("@")) return;
+    setDone(true);
+    setEmail("");
+  }
+
+  return (
+    <section className="px-4 pb-24 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#0A0A0A_0%,#2A2A2A_55%,#1A1608_100%)] px-6 py-12 sm:px-10"
+      >
+        <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
+              Newsletter
+            </p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-white sm:text-4xl">
+              Get drops, studio tips, and early access.
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base">
+              Join the craft list. No spam — just new collections and avatar
+              studio updates.
+            </p>
+          </div>
+          <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
+            <label className="sr-only" htmlFor="newsletter-email">
+              Email address
+            </label>
+            <input
+              id="newsletter-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@email.com"
+              className="h-12 flex-1 rounded-full border border-white/15 bg-white/5 px-5 text-sm text-white outline-none ring-[var(--gold)] placeholder:text-white/40 focus:ring-2"
+            />
+            <Button type="submit" variant="gold">
+              Subscribe
+            </Button>
+          </form>
+        </div>
+        {done && (
+          <p className="mt-4 text-sm text-[var(--gold)]" role="status">
+            You&apos;re on the list. Craft awaits.
+          </p>
+        )}
+      </motion.div>
+    </section>
+  );
+}
