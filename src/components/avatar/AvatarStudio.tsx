@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   Download,
   RotateCcw,
@@ -49,10 +47,7 @@ export function AvatarStudio() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const previewRef = useRef<HTMLDivElement>(null);
-  const categoryScrollRef = useRef<HTMLDivElement>(null);
   const optionScrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
   const [canScrollOptionsUp, setCanScrollOptionsUp] = useState(false);
   const [canScrollOptionsDown, setCanScrollOptionsDown] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
@@ -60,35 +55,6 @@ export function AvatarStudio() {
   useEffect(() => {
     setSaved(loadAvatars());
   }, []);
-
-  useEffect(() => {
-    const el = categoryScrollRef.current;
-    if (!el) return;
-
-    const update = () => {
-      setCanScrollLeft(el.scrollLeft > 4);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-    };
-
-    update();
-    const frame = window.requestAnimationFrame(update);
-    el.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [category]);
-
-  function scrollCategories(direction: "left" | "right") {
-    const el = categoryScrollRef.current;
-    if (!el) return;
-    el.scrollBy({
-      left: direction === "left" ? -220 : 220,
-      behavior: "smooth",
-    });
-  }
 
   function scrollOptions(direction: "up" | "down") {
     const el = optionScrollRef.current;
@@ -107,16 +73,21 @@ export function AvatarStudio() {
 
     const update = () => {
       setCanScrollOptionsUp(el.scrollTop > 4);
-      setCanScrollOptionsDown(el.scrollTop + el.clientHeight < el.scrollHeight - 4);
+      setCanScrollOptionsDown(
+        el.scrollTop + el.clientHeight < el.scrollHeight - 4,
+      );
     };
 
     el.scrollTop = 0;
     update();
     const frame = window.requestAnimationFrame(update);
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
     el.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
       window.cancelAnimationFrame(frame);
+      observer.disconnect();
       el.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
@@ -219,7 +190,7 @@ export function AvatarStudio() {
         </p>
       </div>
 
-      <div className="mt-10 overflow-hidden rounded-[1.75rem] border border-[var(--walnut)]/30 bg-[linear-gradient(145deg,#3f2d20_0%,#5c4331_45%,#3f2d20_100%)] p-3 shadow-[0_24px_60px_rgba(30,42,68,0.18)] sm:p-4">
+      <div className="mt-10 rounded-[1.75rem] border border-[var(--walnut)]/30 bg-[linear-gradient(145deg,#3f2d20_0%,#5c4331_45%,#3f2d20_100%)] p-3 shadow-[0_24px_60px_rgba(30,42,68,0.18)] sm:p-4">
       <div className="grid gap-4 rounded-[1.35rem] bg-[var(--ivory)] p-4 sm:p-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-6">
         <div className="space-y-5">
           <div className="lodge-card rounded-[1.5rem] p-4 sm:p-6">
@@ -312,64 +283,36 @@ export function AvatarStudio() {
 
         <div className="space-y-5">
           <div className="lodge-card rounded-[1.5rem] p-4 sm:p-6">
-            <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="mb-3">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--walnut)]">
                 Customize
               </p>
-              <p className="text-xs text-[var(--walnut)]/80">
-                Scroll or use arrows to see all tabs
-              </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Previous categories"
-                onClick={() => scrollCategories("left")}
-                disabled={!canScrollLeft}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] transition enabled:hover:border-[var(--gold)] enabled:hover:bg-[var(--candle)]/30 disabled:cursor-not-allowed disabled:opacity-35"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-
-              <div
-                ref={categoryScrollRef}
-                className="category-scroll flex min-w-0 flex-1 gap-2 overflow-x-auto pb-3"
-              >
-                {AVATAR_CATEGORIES.map((item) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    onClick={() => setCategory(item.key)}
+            <div className="flex flex-wrap gap-2">
+              {AVATAR_CATEGORIES.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setCategory(item.key)}
+                  className={cn(
+                    "rounded-full border px-3.5 py-2 text-sm font-semibold transition",
+                    category === item.key
+                      ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[inset_0_-2px_0_rgba(200,162,74,0.9)]"
+                      : "border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)] hover:bg-[var(--candle)]/35",
+                  )}
+                >
+                  <span
                     className={cn(
-                      "shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition",
+                      "mr-2 inline-block h-2 w-2 rounded-full",
                       category === item.key
-                        ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[inset_0_-2px_0_rgba(200,162,74,0.9)]"
-                        : "border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)] hover:bg-[var(--candle)]/35",
+                        ? "bg-[var(--gold)]"
+                        : "bg-[var(--copper)]",
                     )}
-                  >
-                    <span
-                      className={cn(
-                        "mr-2 inline-block h-2 w-2 rounded-full",
-                        category === item.key
-                          ? "bg-[var(--gold)]"
-                          : "bg-[var(--copper)]",
-                      )}
-                    />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                aria-label="Next categories"
-                onClick={() => scrollCategories("right")}
-                disabled={!canScrollRight}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] transition enabled:hover:border-[var(--gold)] enabled:hover:bg-[var(--candle)]/30 disabled:cursor-not-allowed disabled:opacity-35"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
+                  />
+                  {item.label}
+                </button>
+              ))}
             </div>
 
             <div className="mt-5">
@@ -399,47 +342,61 @@ export function AvatarStudio() {
                 </div>
               </div>
 
-              <div
-                ref={optionScrollRef}
-                className="option-scroll max-h-[240px] overflow-y-scroll rounded-2xl border border-[var(--stone)] bg-[color-mix(in_srgb,var(--ivory)_70%,white)] p-3"
-              >
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {options.map((option) => {
-                    const selected =
-                      config[category as keyof AvatarConfig] === option.id;
-                    const tone =
-                      "tone" in option
-                        ? (option as { tone?: string }).tone
-                        : undefined;
-                    return (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() =>
-                          update(
-                            category as keyof AvatarConfig,
-                            option.id as AvatarConfig[keyof AvatarConfig],
-                          )
-                        }
-                        className={cn(
-                          "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
-                          selected
-                            ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
-                            : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
-                        )}
-                      >
-                        {tone && (
-                          <span
-                            className="mb-2 block h-6 w-6 rounded-full border border-[var(--lodge-blue)]/20"
-                            style={{ backgroundColor: tone }}
-                          />
-                        )}
-                        {option.label}
-                      </button>
-                    );
-                  })}
+              <div className="relative">
+                <div
+                  ref={optionScrollRef}
+                  tabIndex={0}
+                  className="option-scroll h-[280px] overflow-y-scroll overscroll-contain rounded-2xl border border-[var(--stone)] bg-[color-mix(in_srgb,var(--ivory)_70%,white)] p-3 pr-2"
+                >
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {options.map((option) => {
+                      const selected =
+                        config[category as keyof AvatarConfig] === option.id;
+                      const tone =
+                        "tone" in option
+                          ? (option as { tone?: string }).tone
+                          : undefined;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() =>
+                            update(
+                              category as keyof AvatarConfig,
+                              option.id as AvatarConfig[keyof AvatarConfig],
+                            )
+                          }
+                          className={cn(
+                            "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
+                            selected
+                              ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
+                              : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
+                          )}
+                        >
+                          {tone && (
+                            <span
+                              className="mb-2 block h-6 w-6 rounded-full border border-[var(--lodge-blue)]/20"
+                              style={{ backgroundColor: tone }}
+                            />
+                          )}
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
+                {canScrollOptionsDown && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-2xl bg-gradient-to-t from-[color-mix(in_srgb,var(--ivory)_95%,white)] to-transparent"
+                  />
+                )}
               </div>
+              {canScrollOptionsDown && (
+                <p className="mt-2 text-xs text-[var(--walnut)]/80">
+                  Scroll or use the arrows to see more choices
+                </p>
+              )}
             </div>
           </div>
 
