@@ -74,10 +74,11 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/cart"
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gold)]/35 bg-[var(--lodge-blue)] text-[var(--ivory)] transition hover:border-[var(--gold)] hover:text-[var(--gold)]"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/40 bg-[var(--lodge-blue)] text-white transition hover:border-white hover:text-white"
             aria-label={`Cart with ${totalItems} items`}
+            style={{ color: "#FFFFFF" }}
           >
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingBag className="h-5 w-5 text-white" />
             {totalItems > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--gold)] px-1 text-[10px] font-bold text-[var(--lodge-blue)]">
                 {totalItems}
