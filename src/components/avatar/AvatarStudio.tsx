@@ -50,6 +50,7 @@ export function AvatarStudio() {
   const optionScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollOptionsUp, setCanScrollOptionsUp] = useState(false);
   const [canScrollOptionsDown, setCanScrollOptionsDown] = useState(false);
+  const [optionThumb, setOptionThumb] = useState({ top: 0, height: 100 });
   const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function AvatarStudio() {
     const el = optionScrollRef.current;
     if (!el) return;
     el.scrollBy({
-      top: direction === "up" ? -160 : 160,
+      top: direction === "up" ? -120 : 120,
       behavior: "smooth",
     });
   }
@@ -72,10 +73,19 @@ export function AvatarStudio() {
     if (!el) return;
 
     const update = () => {
-      setCanScrollOptionsUp(el.scrollTop > 4);
-      setCanScrollOptionsDown(
-        el.scrollTop + el.clientHeight < el.scrollHeight - 4,
+      const maxScroll = Math.max(0, el.scrollHeight - el.clientHeight);
+      const thumbHeight = Math.max(
+        28,
+        (el.clientHeight / Math.max(el.scrollHeight, 1)) * 100,
       );
+      const thumbTop =
+        maxScroll > 0
+          ? (el.scrollTop / maxScroll) * (100 - thumbHeight)
+          : 0;
+
+      setCanScrollOptionsUp(el.scrollTop > 4);
+      setCanScrollOptionsDown(el.scrollTop < maxScroll - 4);
+      setOptionThumb({ top: thumbTop, height: thumbHeight });
     };
 
     el.scrollTop = 0;
@@ -83,6 +93,7 @@ export function AvatarStudio() {
     const frame = window.requestAnimationFrame(update);
     const observer = new ResizeObserver(update);
     observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
     el.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
@@ -342,13 +353,13 @@ export function AvatarStudio() {
                 </div>
               </div>
 
-              <div className="relative">
+              <div className="flex h-[168px] overflow-hidden rounded-2xl border border-[var(--stone)] bg-[color-mix(in_srgb,var(--ivory)_70%,white)]">
                 <div
                   ref={optionScrollRef}
                   tabIndex={0}
-                  className="option-scroll h-[280px] overflow-y-scroll overscroll-contain rounded-2xl border border-[var(--stone)] bg-[color-mix(in_srgb,var(--ivory)_70%,white)] p-3 pr-2"
+                  className="option-scroll min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-3"
                 >
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {options.map((option) => {
                       const selected =
                         config[category as keyof AvatarConfig] === option.id;
@@ -385,18 +396,31 @@ export function AvatarStudio() {
                     })}
                   </div>
                 </div>
-                {canScrollOptionsDown && (
+
+                <div
+                  className="relative m-2 w-3.5 shrink-0 cursor-pointer rounded-full bg-[color-mix(in_srgb,var(--stone)_55%,white)]"
+                  aria-hidden="true"
+                  onClick={(event) => {
+                    const el = optionScrollRef.current;
+                    if (!el) return;
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const ratio = (event.clientY - rect.top) / rect.height;
+                    const maxScroll = el.scrollHeight - el.clientHeight;
+                    el.scrollTop = ratio * maxScroll;
+                  }}
+                >
                   <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-2xl bg-gradient-to-t from-[color-mix(in_srgb,var(--ivory)_95%,white)] to-transparent"
+                    className="absolute inset-x-0 rounded-full bg-[linear-gradient(180deg,var(--gold),var(--copper))] shadow-sm"
+                    style={{
+                      top: `${optionThumb.top}%`,
+                      height: `${optionThumb.height}%`,
+                    }}
                   />
-                )}
+                </div>
               </div>
-              {canScrollOptionsDown && (
-                <p className="mt-2 text-xs text-[var(--walnut)]/80">
-                  Scroll or use the arrows to see more choices
-                </p>
-              )}
+              <p className="mt-2 text-xs text-[var(--walnut)]/80">
+                Use the scrollbar or arrows to browse all choices
+              </p>
             </div>
           </div>
 

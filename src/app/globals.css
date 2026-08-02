@@ -84,29 +84,17 @@ header a.nav-link {
   color: #ffffff !important;
 }
 
+/* Native bar hidden — Choices uses a custom always-visible scrollbar. */
 .option-scroll {
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
-  scrollbar-width: auto;
-  scrollbar-color: var(--gold) color-mix(in srgb, var(--stone) 45%, white);
+  scrollbar-width: none;
 }
 
 .option-scroll::-webkit-scrollbar {
-  width: 16px;
-}
-
-.option-scroll::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--stone) 55%, white);
-  border-radius: 999px;
-  margin: 6px 0;
-}
-
-.option-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--gold), var(--copper));
-  border-radius: 999px;
-  border: 3px solid color-mix(in srgb, var(--stone) 55%, white);
-  min-height: 40px;
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 :focus-visible {
