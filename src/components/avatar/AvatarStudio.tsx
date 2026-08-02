@@ -56,9 +56,9 @@ export function AvatarStudio() {
   const previewConfig = useMemo(
     () => ({
       ...config,
-      clothing: "tee" as const,
       clothingColor:
-        SHIRT_COLORS.find((c) => c.hex === shirtColor)?.id ?? "black",
+        SHIRT_COLORS.find((c) => c.hex === shirtColor)?.id ??
+        config.clothingColor,
     }),
     [config, shirtColor],
   );

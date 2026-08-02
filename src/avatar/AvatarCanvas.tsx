@@ -99,17 +99,17 @@ export function AvatarCanvas({ config, className, decorative }: Props) {
       <g transform={poseTransform(config.pose)}>
         {/* —— BODY (smaller, ~2/3 of figure under oversized head) —— */}
         <g transform={`translate(140 250) scale(${bodyScale} 1) translate(-140 -250)`}>
-          {/* Legs */}
+          {/* Legs — dark trousers with barong; suit fabric otherwise */}
           <path
             d="M118 268 L112 318 L134 318 L138 268 Z"
-            fill={`url(#cloth-${uid})`}
+            fill={config.clothing === "barong" ? "#1A1A1A" : `url(#cloth-${uid})`}
             stroke={LINE}
             strokeWidth={SW}
             strokeLinejoin="round"
           />
           <path
             d="M162 268 L166 318 L188 318 L182 268 Z"
-            fill={`url(#cloth-${uid})`}
+            fill={config.clothing === "barong" ? "#1A1A1A" : `url(#cloth-${uid})`}
             stroke={LINE}
             strokeWidth={SW}
             strokeLinejoin="round"
@@ -136,76 +136,24 @@ export function AvatarCanvas({ config, className, decorative }: Props) {
             </>
           )}
 
-          {/* Torso / clothing */}
-          {config.clothing === "hoodie" && (
-            <path
-              d="M92 176 C92 156 112 146 140 146 C168 146 188 156 188 176 L196 268 C196 280 184 288 172 288 L108 288 C96 288 84 280 84 268 Z"
-              fill={`url(#cloth-${uid})`}
-              stroke={LINE}
-              strokeWidth={SW}
-              strokeLinejoin="round"
-            />
-          )}
-          {config.clothing === "jacket" && (
-            <>
-              <path
-                d="M90 178 L106 156 L140 166 L174 156 L190 178 L200 272 C200 284 188 292 174 292 L106 292 C92 292 80 284 80 272 Z"
-                fill={`url(#cloth-${uid})`}
-                stroke={LINE}
-                strokeWidth={SW}
-                strokeLinejoin="round"
-              />
-              <path d="M140 166 V292" stroke={GOLD} strokeWidth="3" strokeLinecap="round" />
-            </>
-          )}
-          {(config.clothing === "tee" ||
-            config.clothing === "polo" ||
-            config.clothing === "lodge") && (
-            <path
-              d="M96 178 L114 158 L140 168 L166 158 L184 178 L194 270 C194 282 182 290 170 290 L110 290 C98 290 86 282 86 270 Z"
-              fill={`url(#cloth-${uid})`}
-              stroke={LINE}
-              strokeWidth={SW}
-              strokeLinejoin="round"
-            />
-          )}
-          {config.clothing === "polo" && (
-            <path
-              d="M128 164 L140 182 L152 164"
-              fill="none"
-              stroke={GOLD}
-              strokeWidth="3"
-              strokeLinejoin="round"
-            />
-          )}
-          {config.clothing === "lodge" && (
-            <>
-              <path d="M120 168 H160" stroke="#F7F7F5" strokeWidth="3" strokeLinecap="round" />
-              <circle cx="140" cy="188" r="3.5" fill={GOLD} stroke={LINE} strokeWidth="2" />
-            </>
-          )}
+          {/* Torso / formal clothing */}
+          <FormalClothing
+            type={config.clothing}
+            cloth={`url(#cloth-${uid})`}
+            clothSolid={cloth}
+            clothShade={clothShade}
+            cel={`url(#cel-${uid})`}
+            line={LINE}
+            gold={GOLD}
+            sw={SW}
+          />
 
           {/* Soft cel highlight on torso */}
           <path
             d="M108 182 C118 176 130 174 140 174 C128 190 118 220 114 250 C108 240 104 210 108 182 Z"
             fill={`url(#cel-${uid})`}
-            opacity="0.55"
+            opacity="0.45"
           />
-
-          {/* Shirt mark */}
-          {(config.clothing === "tee" ||
-            config.clothing === "polo" ||
-            config.clothing === "hoodie" ||
-            config.clothing === "lodge") && (
-            <image
-              href="/shirt-mark.png"
-              x="116"
-              y="196"
-              width="48"
-              height="48"
-              preserveAspectRatio="xMidYMid meet"
-            />
-          )}
 
           {/* Apron */}
           {config.apron !== "none" && (
@@ -529,6 +477,284 @@ export function AvatarCanvas({ config, className, decorative }: Props) {
         </g>
       </g>
     </svg>
+  );
+}
+
+function FormalClothing({
+  type,
+  cloth,
+  clothSolid,
+  clothShade,
+  cel,
+  line,
+  gold,
+  sw,
+}: {
+  type: string;
+  cloth: string;
+  clothSolid: string;
+  clothShade: string;
+  cel: string;
+  line: string;
+  gold: string;
+  sw: number;
+}) {
+  const shirt = "#F7F4EE";
+  const tuxedoSatin = clothShade;
+
+  if (type === "barong") {
+    return (
+      <g>
+        {/* Cream translucent barong body */}
+        <path
+          d="M94 178 L114 156 L140 166 L166 156 L186 178 L196 278 C196 288 186 296 174 296 L106 296 C94 296 84 288 84 278 Z"
+          fill={cloth}
+          stroke={line}
+          strokeWidth={sw}
+          strokeLinejoin="round"
+          opacity="0.96"
+        />
+        {/* Mandarin collar */}
+        <path
+          d="M122 162 H158 L154 176 H126 Z"
+          fill={clothSolid}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* Embroidery panel */}
+        <path
+          d="M128 188 V268 M140 184 V272 M152 188 V268"
+          fill="none"
+          stroke={gold}
+          strokeWidth="2"
+          opacity="0.85"
+        />
+        <path
+          d="M122 200 Q140 212 158 200"
+          fill="none"
+          stroke={gold}
+          strokeWidth="2"
+        />
+        <path
+          d="M124 230 Q140 244 156 230"
+          fill="none"
+          stroke={gold}
+          strokeWidth="2"
+        />
+        <circle cx="140" cy="192" r="3" fill={gold} />
+        <image
+          href="/shirt-mark.png"
+          x="124"
+          y="208"
+          width="32"
+          height="32"
+          preserveAspectRatio="xMidYMid meet"
+          opacity="0.9"
+        />
+      </g>
+    );
+  }
+
+  if (type === "tuxedo") {
+    return (
+      <g>
+        {/* Shirt */}
+        <path
+          d="M118 168 L140 176 L162 168 L168 250 L112 250 Z"
+          fill={shirt}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* Jacket */}
+        <path
+          d="M88 178 L106 154 L128 168 L140 176 L152 168 L174 154 L192 178 L202 278 C202 290 190 298 176 298 L104 298 C90 298 78 290 78 278 Z"
+          fill={cloth}
+          stroke={line}
+          strokeWidth={sw}
+          strokeLinejoin="round"
+        />
+        {/* Satin peak lapels */}
+        <path
+          d="M128 168 L140 176 L118 230 L106 168 Z"
+          fill={tuxedoSatin}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M152 168 L140 176 L162 230 L174 168 Z"
+          fill={tuxedoSatin}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* Bow tie */}
+        <path
+          d="M124 172 L140 180 L156 172 L140 176 Z"
+          fill="#0A0A0A"
+          stroke={line}
+          strokeWidth="2.5"
+        />
+        <rect x="136" y="174" width="8" height="6" rx="1" fill="#0A0A0A" stroke={line} strokeWidth="2" />
+        {/* Shirt studs */}
+        <circle cx="140" cy="198" r="2.2" fill={gold} />
+        <circle cx="140" cy="214" r="2.2" fill={gold} />
+        <circle cx="140" cy="230" r="2.2" fill={gold} />
+      </g>
+    );
+  }
+
+  if (type === "formal") {
+    return (
+      <g>
+        <path
+          d="M118 168 L140 176 L162 168 L170 252 L110 252 Z"
+          fill={shirt}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* Longer formal coat */}
+        <path
+          d="M84 176 L104 150 L128 166 L140 174 L152 166 L176 150 L196 176 L208 300 C208 312 194 320 178 320 L102 320 C86 320 72 312 72 300 Z"
+          fill={cloth}
+          stroke={line}
+          strokeWidth={sw}
+          strokeLinejoin="round"
+        />
+        {/* Vest */}
+        <path
+          d="M120 180 L140 188 L160 180 L164 250 L116 250 Z"
+          fill={clothShade}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path d="M140 188 V250" stroke={gold} strokeWidth="2.5" />
+        {/* Cravat / necktie */}
+        <path
+          d="M134 176 L140 206 L146 176 Z"
+          fill={gold}
+          stroke={line}
+          strokeWidth="2.5"
+        />
+        <path
+          d="M118 168 L106 210 L128 174 Z"
+          fill={clothShade}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M162 168 L174 210 L152 174 Z"
+          fill={clothShade}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+      </g>
+    );
+  }
+
+  if (type === "sports_coat") {
+    return (
+      <g>
+        {/* Casual shirt */}
+        <path
+          d="M118 168 L140 176 L162 168 L168 248 L112 248 Z"
+          fill={shirt}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path d="M132 168 L140 188 L148 168" fill="none" stroke={line} strokeWidth="2.5" />
+        {/* Open sports coat */}
+        <path
+          d="M90 178 L108 154 L130 168 L140 176 L150 168 L172 154 L190 178 L200 276 C200 288 188 296 174 296 L106 296 C92 296 80 288 80 276 Z"
+          fill={cloth}
+          stroke={line}
+          strokeWidth={sw}
+          strokeLinejoin="round"
+        />
+        {/* Soft notch lapels */}
+        <path
+          d="M130 168 L140 176 L122 220 L108 166 Z"
+          fill={cel}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M150 168 L140 176 L158 220 L172 166 Z"
+          fill={cel}
+          stroke={line}
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+        {/* Pocket square */}
+        <rect x="156" y="198" width="14" height="10" rx="2" fill={shirt} stroke={line} strokeWidth="2" />
+        <path d="M158 198 L163 192 L168 198" fill={gold} stroke={line} strokeWidth="2" />
+      </g>
+    );
+  }
+
+  // Business suit (default)
+  return (
+    <g>
+      <path
+        d="M118 168 L140 176 L162 168 L168 250 L112 250 Z"
+        fill={shirt}
+        stroke={line}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M88 178 L106 154 L128 168 L140 176 L152 168 L174 154 L192 178 L202 278 C202 290 190 298 176 298 L104 298 C90 298 78 290 78 278 Z"
+        fill={cloth}
+        stroke={line}
+        strokeWidth={sw}
+        strokeLinejoin="round"
+      />
+      {/* Notch lapels */}
+      <path
+        d="M128 168 L140 176 L118 228 L106 166 Z"
+        fill={clothShade}
+        stroke={line}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M152 168 L140 176 L162 228 L174 166 Z"
+        fill={clothShade}
+        stroke={line}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      {/* Tie */}
+      <path
+        d="M134 176 L140 214 L146 176 Z"
+        fill={gold}
+        stroke={line}
+        strokeWidth="2.5"
+      />
+      <path
+        d="M136 214 L140 248 L144 214 Z"
+        fill={gold}
+        stroke={line}
+        strokeWidth="2.5"
+      />
+      <image
+        href="/shirt-mark.png"
+        x="152"
+        y="210"
+        width="22"
+        height="22"
+        preserveAspectRatio="xMidYMid meet"
+        opacity="0.85"
+      />
+    </g>
   );
 }
 
