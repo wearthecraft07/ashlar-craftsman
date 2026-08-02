@@ -252,7 +252,7 @@ export function AvatarStudio() {
                   className={cn(
                     "shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition",
                     category === item.key
-                      ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)] shadow-[inset_0_-2px_0_rgba(200,162,74,0.9)]"
+                      ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[inset_0_-2px_0_rgba(200,162,74,0.9)]"
                       : "border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)] hover:bg-[var(--candle)]/35",
                   )}
                 >
@@ -290,7 +290,7 @@ export function AvatarStudio() {
                     className={cn(
                       "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
                       selected
-                        ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
+                        ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
                         : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
                     )}
                   >

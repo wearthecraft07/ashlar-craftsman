@@ -68,7 +68,7 @@ export function ShopCatalog() {
               className={cn(
                 "shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition",
                 category === filter.id
-                  ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)]"
+                  ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)]"
                   : "border-[var(--lodge-blue)]/20 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)]",
               )}
             >
