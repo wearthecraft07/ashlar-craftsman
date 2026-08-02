@@ -66,10 +66,10 @@ export function ShopCatalog() {
               type="button"
               onClick={() => setCategory(filter.id)}
               className={cn(
-                "shrink-0 rounded-full px-4 py-2 text-sm font-medium transition",
+                "shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition",
                 category === filter.id
-                  ? "bg-[var(--ink)] text-white"
-                  : "bg-black/5 text-[var(--muted)]",
+                  ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)]"
+                  : "border-[var(--lodge-blue)]/20 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)]",
               )}
             >
               {filter.label}

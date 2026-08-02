@@ -250,13 +250,20 @@ export function AvatarStudio() {
                   type="button"
                   onClick={() => setCategory(item.key)}
                   className={cn(
-                    "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition",
+                    "shrink-0 rounded-full border px-4 py-2.5 text-sm font-semibold transition",
                     category === item.key
-                      ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--gold)] shadow-[inset_0_0_0_1px_rgba(200,162,74,0.35)]"
-                      : "border-[var(--stone)] bg-[color-mix(in_srgb,var(--stone)_22%,white)] text-[var(--walnut)] hover:border-[var(--copper)] hover:text-[var(--lodge-blue)]",
+                      ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)] shadow-[inset_0_-2px_0_rgba(200,162,74,0.9)]"
+                      : "border-[var(--lodge-blue)]/25 bg-white text-[var(--lodge-blue)] hover:border-[var(--gold)] hover:bg-[var(--candle)]/35",
                   )}
                 >
-                  <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[var(--gold)]/80" />
+                  <span
+                    className={cn(
+                      "mr-2 inline-block h-2 w-2 rounded-full",
+                      category === item.key
+                        ? "bg-[var(--gold)]"
+                        : "bg-[var(--copper)]",
+                    )}
+                  />
                   {item.label}
                 </button>
               ))}
@@ -281,15 +288,15 @@ export function AvatarStudio() {
                       )
                     }
                     className={cn(
-                      "rounded-2xl border px-3 py-3 text-left text-sm transition",
+                      "rounded-2xl border px-3 py-3 text-left text-sm font-semibold transition",
                       selected
-                        ? "border-[var(--gold)] bg-[color-mix(in_srgb,var(--lodge-blue)_10%,var(--ivory))] text-[var(--lodge-blue)] shadow-[0_0_0_1px_rgba(200,162,74,0.45)]"
-                        : "border-[var(--stone)] bg-white/60 text-[var(--charcoal)] hover:border-[var(--copper)]",
+                        ? "border-[var(--gold)] bg-[var(--lodge-blue)] text-[var(--ivory)] shadow-[0_0_0_1px_rgba(200,162,74,0.55)]"
+                        : "border-[var(--lodge-blue)]/20 bg-white text-[var(--charcoal)] hover:border-[var(--gold)] hover:text-[var(--lodge-blue)]",
                     )}
                   >
                     {tone && (
                       <span
-                        className="mb-2 block h-6 w-6 rounded-full border border-[var(--stone)]"
+                        className="mb-2 block h-6 w-6 rounded-full border border-[var(--lodge-blue)]/20"
                         style={{ backgroundColor: tone }}
                       />
                     )}
