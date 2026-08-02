@@ -60,9 +60,11 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm font-semibold tracking-wide text-white transition-colors hover:text-[var(--gold)]",
-                pathname === link.href && "text-[var(--gold)] underline decoration-[var(--gold)] underline-offset-8",
+                "nav-link text-sm font-semibold tracking-wide transition-opacity hover:opacity-80",
+                pathname === link.href &&
+                  "underline decoration-[var(--gold)] decoration-2 underline-offset-8",
               )}
+              style={{ color: "#FFFFFF" }}
             >
               {link.label}
             </Link>
@@ -109,7 +111,8 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rounded-xl px-3 py-3 text-base font-semibold text-white hover:bg-white/5 hover:text-[var(--gold)]"
+                  className="rounded-xl px-3 py-3 text-base font-semibold hover:bg-white/5"
+                  style={{ color: "#FFFFFF" }}
                 >
                   {link.label}
                 </Link>

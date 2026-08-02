@@ -80,6 +80,10 @@ a {
   text-decoration: none;
 }
 
+header a.nav-link {
+  color: #ffffff !important;
+}
+
 :focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
