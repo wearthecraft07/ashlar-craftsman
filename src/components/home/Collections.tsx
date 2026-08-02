@@ -25,20 +25,20 @@ export function Collections() {
             >
               <Link
                 href={collection.href}
-                className="group relative flex min-h-[260px] flex-col justify-end overflow-hidden rounded-[2rem] border border-black/5 p-6 transition duration-500 hover:-translate-y-1"
+                className="group relative flex min-h-[260px] flex-col justify-end overflow-hidden rounded-[2rem] border border-[var(--gold)]/20 p-6 transition duration-500 hover:-translate-y-1"
                 style={{
-                  background: `linear-gradient(160deg, ${collection.accent}22, #0A0A0A)`,
+                  background: `linear-gradient(160deg, ${collection.accent}33, #1E2A44)`,
                 }}
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_45%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(242,217,138,0.18),transparent_45%)]" />
                 <div className="relative">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
                     Collection
                   </p>
-                  <h3 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-white">
+                  <h3 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--ivory)]">
                     {collection.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/70">
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--ivory)]/70">
                     {collection.blurb}
                   </p>
                 </div>

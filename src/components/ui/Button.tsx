@@ -8,11 +8,13 @@ type Variant = "gold" | "ghost" | "dark" | "white";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
-  gold: "bg-[var(--gold)] text-[var(--ink)] hover:bg-[var(--gold-soft)] shadow-[0_10px_30px_rgba(201,162,39,0.25)]",
+  gold:
+    "bg-[var(--gold)] text-[var(--lodge-blue)] hover:bg-[var(--copper)] hover:text-[var(--ivory)] shadow-[0_10px_28px_rgba(200,162,74,0.28)]",
   ghost:
-    "bg-transparent text-[var(--ink)] border border-[var(--ink)]/15 hover:border-[var(--gold)] hover:text-[var(--gold)]",
-  dark: "bg-[var(--ink)] text-white hover:bg-[var(--charcoal)]",
-  white: "bg-white text-[var(--ink)] hover:bg-[var(--stone)]",
+    "bg-[var(--ivory)] text-[var(--walnut)] border border-[var(--gold)] hover:bg-[color-mix(in_srgb,var(--candle)_35%,var(--ivory))] hover:text-[var(--lodge-blue)]",
+  dark: "bg-[var(--lodge-blue)] text-[var(--ivory)] hover:bg-[color-mix(in_srgb,var(--lodge-blue)_85%,black)]",
+  white:
+    "bg-[var(--panel)] text-[var(--charcoal)] border border-[var(--stone)] hover:border-[var(--gold)]",
 };
 
 const sizes: Record<Size, string> = {
@@ -37,7 +39,7 @@ export function Button({
   ...props
 }: Props) {
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ivory)] disabled:opacity-50",
     variants[variant],
     sizes[size],
     className,

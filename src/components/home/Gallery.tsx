@@ -24,7 +24,7 @@ export function Gallery() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="overflow-hidden rounded-[1.5rem] border border-black/5 bg-white p-3 shadow-[0_20px_50px_rgba(10,10,10,0.06)]"
+              className="lodge-card overflow-hidden rounded-[1.5rem] p-3"
             >
               <AvatarCanvas
                 config={{ ...DEFAULT_AVATAR, ...item.avatarSeed }}

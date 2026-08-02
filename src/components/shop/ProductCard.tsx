@@ -15,8 +15,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       className="group"
     >
       <Link href={`/shop/${product.slug}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] bg-[linear-gradient(160deg,#2A2A2A,#0A0A0A)]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(201,162,39,0.22),transparent_45%)]" />
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border border-[var(--stone)] bg-[linear-gradient(160deg,#1E2A44,#2D2D2D)]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(242,217,138,0.22),transparent_45%)]" />
           <div className="absolute inset-0 flex items-center justify-center p-8 transition duration-500 group-hover:scale-105">
             <svg viewBox="0 0 200 220" className="h-full w-full max-w-[220px]">
               <path

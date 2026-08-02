@@ -52,15 +52,15 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden pt-24 sm:pt-28">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(201,162,39,0.16),_transparent_55%),linear-gradient(180deg,#F4F1EA_0%,#FAFAF8_45%,#FFFFFF_100%)]" />
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[var(--gold)]/10 blur-3xl" />
-        <div className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-black/5 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(242,217,138,0.28),_transparent_55%),linear-gradient(180deg,#F7F2E7_0%,#F3ECDC_50%,#EFE6D4_100%)]" />
+        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[var(--candle)]/25 blur-3xl" />
+        <div className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[var(--lodge-blue)]/10 blur-3xl" />
         <svg
-          className="absolute inset-x-0 top-16 mx-auto h-[420px] w-full max-w-5xl opacity-[0.12]"
+          className="absolute inset-x-0 top-16 mx-auto h-[420px] w-full max-w-5xl opacity-[0.1]"
           viewBox="0 0 800 400"
           aria-hidden="true"
         >
-          <g fill="none" stroke="#C9A227" strokeWidth="2.5">
+          <g fill="none" stroke="#C8A24A" strokeWidth="2.5">
             <rect x="80" y="70" width="70" height="70" transform="rotate(12 115 105)" />
             <circle cx="115" cy="105" r="20" />
             <path d="M620 80 L690 160 L620 160 Z" />
@@ -79,7 +79,7 @@ export function Hero() {
           >
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-1/2 h-[85%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.18)_0%,rgba(247,244,238,0)_70%)] blur-2xl lg:left-[36%]"
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[85%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(242,217,138,0.4)_0%,rgba(247,242,231,0)_70%)] blur-2xl lg:left-[36%]"
             />
             <BrandLogo size="hero" priority className="relative z-10" />
           </motion.div>
@@ -87,7 +87,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="mt-6 max-w-xl text-center font-[family-name:var(--font-display)] text-3xl text-[var(--ink)] sm:text-4xl lg:text-left"
+            className="mt-6 max-w-xl text-center font-[family-name:var(--font-display)] text-3xl text-[var(--lodge-blue)] sm:text-4xl lg:text-left"
           >
             Craft Your Journey.
           </motion.h1>
@@ -95,10 +95,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mx-auto mt-5 max-w-lg text-center text-base leading-relaxed text-[var(--muted)] sm:text-lg lg:mx-0 lg:text-left"
+            className="mx-auto mt-5 max-w-lg text-center text-base leading-relaxed text-[var(--walnut)] sm:text-lg lg:mx-0 lg:text-left"
           >
-            Premium cartoon streetwear with classic craftsmanship. Build an
-            original avatar, preview it on luxury tees, and wear the mark.
+            A lodge-inspired studio of traditional craftsmanship. Build an
+            original avatar, dress the craft, and wear the mark.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 18 }}

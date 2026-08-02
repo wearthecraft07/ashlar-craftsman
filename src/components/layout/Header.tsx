@@ -41,8 +41,8 @@ export function Header() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-black/5 bg-[var(--cream)]/90 backdrop-blur-xl"
-          : "bg-transparent",
+          ? "border-b border-[var(--gold)]/25 bg-[var(--lodge-blue)]/95 backdrop-blur-xl"
+          : "bg-[var(--lodge-blue)]",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
@@ -51,7 +51,7 @@ export function Header() {
           className="relative z-10 inline-flex items-center transition duration-300 hover:opacity-90"
           aria-label="the ASHLAR CRAFTSMAN home"
         >
-          <BrandLogo size="sm" className="h-11 w-11 sm:h-12 sm:w-12" priority />
+          <BrandLogo size="sm" className="h-11 w-11 sm:h-12 sm:w-12" priority onDark />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -60,8 +60,8 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm font-medium tracking-wide text-[var(--muted)] transition-colors hover:text-[var(--ink)]",
-                pathname === link.href && "text-[var(--ink)]",
+                "text-sm font-medium tracking-wide text-[var(--ivory)]/70 transition-colors hover:text-[var(--gold)]",
+                pathname === link.href && "text-[var(--gold)]",
               )}
             >
               {link.label}
@@ -72,12 +72,12 @@ export function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/cart"
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white/70 text-[var(--ink)] transition hover:border-[var(--gold)]"
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gold)]/35 bg-[var(--lodge-blue)] text-[var(--ivory)] transition hover:border-[var(--gold)] hover:text-[var(--gold)]"
             aria-label={`Cart with ${totalItems} items`}
           >
             <ShoppingBag className="h-5 w-5" />
             {totalItems > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--gold)] px-1 text-[10px] font-bold text-[var(--ink)]">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--gold)] px-1 text-[10px] font-bold text-[var(--lodge-blue)]">
                 {totalItems}
               </span>
             )}
@@ -87,7 +87,7 @@ export function Header() {
           </Button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white/70 md:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gold)]/35 bg-[var(--lodge-blue)] text-[var(--ivory)] md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
           >
@@ -102,14 +102,14 @@ export function Header() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="border-b border-black/5 bg-[var(--cream)] px-4 pb-6 pt-2 md:hidden"
+            className="border-t border-[var(--gold)]/20 bg-[var(--lodge-blue)] px-4 pb-6 pt-2 md:hidden"
           >
             <nav className="flex flex-col gap-3">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rounded-xl px-3 py-3 text-base font-medium text-[var(--ink)] hover:bg-black/5"
+                  className="rounded-xl px-3 py-3 text-base font-medium text-[var(--ivory)] hover:bg-white/5 hover:text-[var(--gold)]"
                 >
                   {link.label}
                 </Link>

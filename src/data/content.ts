@@ -6,28 +6,28 @@ export const COLLECTIONS = [
     title: "Essentials",
     blurb: "Everyday blanks with gold marks and clean lines.",
     href: "/shop?category=essentials",
-    accent: "#C9A227",
+    accent: "#C8A24A",
   },
   {
     id: "premium",
     title: "Premium Craft",
     blurb: "Heavier fabrics, sharper prints, lasting silhouette.",
     href: "/shop?category=premium",
-    accent: "#F7F7F5",
+    accent: "#F7F2E7",
   },
   {
     id: "limited",
     title: "Limited Drops",
     blurb: "Small-run artwork for collectors of the craft.",
     href: "/shop?category=limited",
-    accent: "#2A2A2A",
+    accent: "#5C4331",
   },
   {
     id: "custom",
     title: "Avatar Studio",
     blurb: "Build your character. Wear your journey.",
     href: "/avatar",
-    accent: "#C9A227",
+    accent: "#C8A24A",
   },
 ];
 

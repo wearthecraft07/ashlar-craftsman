@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #0a0a0a;
-  --charcoal: #2a2a2a;
-  --gold: #c9a227;
-  --gold-soft: #e0c05a;
-  --cream: #f7f4ee;
-  --stone: #ebe6dc;
-  --muted: #5f5a52;
-  --background: #f7f4ee;
-  --foreground: #0a0a0a;
+  /* Primary */
+  --lodge-blue: #1e2a44;
+  --gold: #c8a24a;
+  --gold-soft: #f2d98a;
+  --ivory: #f7f2e7;
+
+  /* Secondary */
+  --stone: #b7b1a3;
+  --walnut: #5c4331;
+  --charcoal: #2d2d2d;
+
+  /* Accent */
+  --copper: #9c6a3a;
+  --candle: #f2d98a;
+
+  /* Semantic aliases used across components */
+  --ink: var(--lodge-blue);
+  --cream: var(--ivory);
+  --muted: var(--walnut);
+  --background: var(--ivory);
+  --foreground: var(--charcoal);
+  --panel: #fffdf8;
+  --wood: #3f2d20;
+  --wood-soft: #6b4a34;
 }
 
 @theme inline {
@@ -28,16 +43,36 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at top left, rgba(201, 162, 39, 0.08), transparent 28%),
-    linear-gradient(180deg, #f7f4ee 0%, #fafaf8 40%, #ffffff 100%);
+  position: relative;
+  min-height: 100vh;
   color: var(--foreground);
   font-family: var(--font-body), "Segoe UI", sans-serif;
-  min-height: 100vh;
+  background-color: var(--ivory);
+  background-image:
+    radial-gradient(ellipse at top, rgba(242, 217, 138, 0.18), transparent 42%),
+    radial-gradient(circle at 85% 10%, rgba(30, 42, 68, 0.06), transparent 28%),
+    linear-gradient(180deg, #f7f2e7 0%, #f3ecdc 55%, #efe6d4 100%);
+}
+
+/* Faint lodge symbols watermark (5–8% opacity) */
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%231E2A44' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M70 140 L110 55 L150 140'/%3E%3Cpath d='M78 145 L142 95'/%3E%3Cpath d='M142 145 L78 95'/%3E%3Ccircle cx='110' cy='105' r='10'/%3E%3Cpath d='M40 55 V120'/%3E%3Cpath d='M32 120 L40 140 L48 120 Z'/%3E%3Cpath d='M170 70 H200 V95 H170 Z'/%3E%3Ccircle cx='185' cy='82' r='4'/%3E%3Crect x='30' y='160' width='40' height='34' rx='2'/%3E%3Cpath d='M160 160 L200 160 L195 194 L165 194 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 ::selection {
-  background: rgba(201, 162, 39, 0.28);
+  background: rgba(200, 162, 74, 0.35);
 }
 
 a {
@@ -48,6 +83,18 @@ a {
 :focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
+}
+
+.lodge-card {
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--stone) 70%, transparent);
+  box-shadow: 0 18px 40px rgba(30, 42, 68, 0.06);
+}
+
+.candle-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 28%, transparent),
+    0 12px 40px rgba(242, 217, 138, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {

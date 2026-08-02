@@ -20,7 +20,7 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.08 }}
-              className="rounded-[1.75rem] border border-black/8 bg-white p-7"
+              className="lodge-card rounded-[1.75rem] p-7"
             >
               <div className="flex gap-1 text-[var(--gold)]" aria-label={`${item.rating} stars`}>
                 {Array.from({ length: item.rating }).map((_, i) => (
