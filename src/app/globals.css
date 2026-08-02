@@ -84,6 +84,31 @@ header a.nav-link {
   color: #ffffff !important;
 }
 
+.category-scroll,
+.option-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) color-mix(in srgb, var(--stone) 40%, white);
+}
+
+.category-scroll::-webkit-scrollbar,
+.option-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.category-scroll::-webkit-scrollbar-track,
+.option-scroll::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--stone) 35%, white);
+  border-radius: 999px;
+}
+
+.category-scroll::-webkit-scrollbar-thumb,
+.option-scroll::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--stone) 35%, white);
+}
+
 :focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
