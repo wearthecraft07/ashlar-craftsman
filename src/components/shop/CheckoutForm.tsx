@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/lib/cart-store";
@@ -11,15 +11,25 @@ const fieldClass =
 
 export function CheckoutForm() {
   const items = useCartStore((s) => s.items);
-  const subtotal = useCartStore((s) =>
-    s.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-  );
   const clear = useCartStore((s) => s.clear);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [items],
+  );
+  const shipping = subtotal >= 7500 ? 0 : subtotal > 0 ? 800 : 0;
+  const tax = Math.round(subtotal * 0.08);
+  const total = subtotal + shipping + tax;
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -30,7 +40,28 @@ export function CheckoutForm() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, items }),
+        body: JSON.stringify({
+          email,
+          name,
+          shippingAddress: {
+            name,
+            line1,
+            line2,
+            city,
+            state,
+            postalCode,
+            country: "US",
+          },
+          items: items.map((item) => ({
+            productId: item.productId || item.slug,
+            slug: item.slug,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+            avatarConfig: item.avatarConfig,
+            custom: item.custom,
+          })),
+        }),
       });
       const data = await res.json();
 
@@ -44,7 +75,9 @@ export function CheckoutForm() {
       }
 
       clear();
-      router.push(`/checkout/success?order=${data.orderId || "demo"}`);
+      router.push(
+        `/checkout/success?order=${data.orderId || "demo"}`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
     } finally {
@@ -75,8 +108,8 @@ export function CheckoutForm() {
           Checkout
         </h1>
         <p className="mt-3 text-sm text-[var(--muted)]">
-          Secure Stripe checkout when keys are configured. Demo mode works
-          locally without Stripe.
+          Prices, tax, and shipping are calculated on the server. Stripe is used
+          when configured; otherwise demo checkout still creates an order.
         </p>
 
         <div className="mt-8 space-y-4">
@@ -103,18 +136,46 @@ export function CheckoutForm() {
             Address
             <input
               required
+              value={line1}
+              onChange={(e) => setLine1(e.target.value)}
               className={fieldClass}
               placeholder="Street address"
             />
           </label>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-sm font-medium">
+            Apt / suite (optional)
+            <input
+              value={line2}
+              onChange={(e) => setLine2(e.target.value)}
+              className={fieldClass}
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-3">
             <label className="block text-sm font-medium">
               City
-              <input required className={fieldClass} />
+              <input
+                required
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className={fieldClass}
+              />
+            </label>
+            <label className="block text-sm font-medium">
+              State
+              <input
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                className={fieldClass}
+              />
             </label>
             <label className="block text-sm font-medium">
               Postal code
-              <input required className={fieldClass} />
+              <input
+                required
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                className={fieldClass}
+              />
             </label>
           </div>
         </div>
@@ -131,7 +192,7 @@ export function CheckoutForm() {
           className="mt-8 w-full"
           disabled={loading}
         >
-          {loading ? "Processing..." : `Pay ${formatCurrency(subtotal)}`}
+          {loading ? "Processing..." : `Pay ${formatCurrency(total)}`}
         </Button>
       </form>
 
@@ -149,9 +210,23 @@ export function CheckoutForm() {
             </li>
           ))}
         </ul>
-        <div className="mt-8 flex justify-between border-t border-white/10 pt-4 text-lg font-semibold">
+        <div className="mt-6 space-y-2 border-t border-white/10 pt-4 text-sm">
+          <div className="flex justify-between text-white/70">
+            <span>Subtotal</span>
+            <span>{formatCurrency(subtotal)}</span>
+          </div>
+          <div className="flex justify-between text-white/70">
+            <span>Shipping</span>
+            <span>{shipping === 0 ? "Free" : formatCurrency(shipping)}</span>
+          </div>
+          <div className="flex justify-between text-white/70">
+            <span>Tax (est.)</span>
+            <span>{formatCurrency(tax)}</span>
+          </div>
+        </div>
+        <div className="mt-4 flex justify-between text-lg font-semibold">
           <span>Total</span>
-          <span>{formatCurrency(subtotal)}</span>
+          <span>{formatCurrency(total)}</span>
         </div>
       </aside>
     </div>

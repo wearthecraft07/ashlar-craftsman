@@ -48,7 +48,25 @@ const heroAvatars: AvatarConfig[] = [
   },
 ];
 
-export function Hero() {
+type HeroContent = {
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonHref: string;
+};
+
+export function Hero({
+  content,
+}: {
+  content?: Partial<HeroContent>;
+}) {
+  const title = content?.title || "Craft Your Journey.";
+  const subtitle =
+    content?.subtitle ||
+    "A lodge-inspired studio of traditional craftsmanship. Build an original avatar, dress the craft, and wear the mark.";
+  const buttonText = content?.buttonText || "Build Your Avatar";
+  const buttonHref = content?.buttonHref || "/avatar";
+
   return (
     <section className="relative overflow-hidden pt-24 sm:pt-28">
       <div className="pointer-events-none absolute inset-0">
@@ -89,7 +107,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="mt-6 max-w-xl text-center font-[family-name:var(--font-display)] text-3xl text-[var(--lodge-blue)] sm:text-4xl lg:text-left"
           >
-            Craft Your Journey.
+            {title}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 18 }}
@@ -97,8 +115,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="mx-auto mt-5 max-w-lg text-center text-base leading-relaxed text-[var(--walnut)] sm:text-lg lg:mx-0 lg:text-left"
           >
-            A lodge-inspired studio of traditional craftsmanship. Build an
-            original avatar, dress the craft, and wear the mark.
+            {subtitle}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -106,8 +123,8 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
           >
-            <Button href="/avatar" size="lg">
-              Build Your Avatar
+            <Button href={buttonHref} size="lg">
+              {buttonText}
             </Button>
             <Button href="/shop" variant="ghost" size="lg">
               Shop Collections

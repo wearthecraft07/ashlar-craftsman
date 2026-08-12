@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth/admin";
 import { configureCloudinary, isCloudinaryConfigured } from "@/lib/cloudinary";
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   if (!isCloudinaryConfigured()) {
     return NextResponse.json(
       {

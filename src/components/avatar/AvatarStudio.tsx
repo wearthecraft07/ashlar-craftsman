@@ -20,6 +20,7 @@ import {
 } from "@/avatar/options";
 import { Button } from "@/components/ui/Button";
 import { SHIRT_COLORS } from "@/data/products";
+import type { StudioCategory } from "@/lib/avatar/catalog";
 import { useCartStore } from "@/lib/cart-store";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig, SavedAvatar } from "@/types";
@@ -35,10 +36,35 @@ function loadAvatars(): SavedAvatar[] {
   }
 }
 
-export function AvatarStudio() {
+function staticCatalog(): StudioCategory[] {
+  return AVATAR_CATEGORIES.map((category, index) => ({
+    key: category.key,
+    label: category.label,
+    layerOrder: index * 10,
+    options: (
+      AVATAR_OPTIONS[category.key] as unknown as Array<{
+        id: string;
+        label: string;
+        tone?: string;
+        shade?: string;
+      }>
+    ).map((option) => ({
+      id: option.id,
+      label: option.label,
+      tone: option.tone,
+      shade: option.shade,
+    })),
+  }));
+}
+
+export function AvatarStudio({
+  catalog,
+}: {
+  catalog?: StudioCategory[];
+}) {
+  const categories = catalog?.length ? catalog : staticCatalog();
   const [config, setConfig] = useState<AvatarConfig>(DEFAULT_AVATAR);
-  const [category, setCategory] =
-    useState<(typeof AVATAR_CATEGORIES)[number]["key"]>("face");
+  const [category, setCategory] = useState(categories[0]?.key ?? "face");
   const [shirtColor, setShirtColor] = useState(SHIRT_COLORS[0].hex);
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -66,7 +92,10 @@ export function AvatarStudio() {
     });
   }
 
-  const options = AVATAR_OPTIONS[category];
+  const options =
+    categories.find((item) => item.key === category)?.options ??
+    AVATAR_OPTIONS[category as keyof typeof AVATAR_OPTIONS] ??
+    [];
 
   useEffect(() => {
     const el = optionScrollRef.current;
@@ -123,7 +152,7 @@ export function AvatarStudio() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   }
 
-  function saveAvatar() {
+  async function saveAvatar() {
     const entry: SavedAvatar = {
       id: activeId ?? `avatar-${Date.now()}`,
       name: name.trim() || "My Avatar",
@@ -137,7 +166,27 @@ export function AvatarStudio() {
     ].slice(0, 12);
     persist(next);
     setActiveId(entry.id);
-    setStatus("Avatar saved. You can edit it anytime.");
+
+    try {
+      const res = await fetch("/api/avatars", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: entry.name,
+          config: entry.config,
+          shirtColor: entry.shirtColor,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.mode !== "local") {
+        setStatus("Avatar saved to your account.");
+        return;
+      }
+    } catch {
+      // Fall through to local save status.
+    }
+
+    setStatus("Avatar saved on this device. Sign in to sync across devices.");
   }
 
   function loadAvatar(avatar: SavedAvatar) {
@@ -301,7 +350,7 @@ export function AvatarStudio() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {AVATAR_CATEGORIES.map((item) => (
+              {categories.map((item) => (
                 <button
                   key={item.key}
                   type="button"
@@ -390,6 +439,14 @@ export function AvatarStudio() {
                               style={{ backgroundColor: tone }}
                             />
                           )}
+                          {"assetUrl" in option && option.assetUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={option.assetUrl}
+                              alt=""
+                              className="mb-2 h-10 w-10 rounded-lg object-contain"
+                            />
+                          ) : null}
                           {option.label}
                         </button>
                       );
