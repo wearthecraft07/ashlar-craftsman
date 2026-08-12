@@ -3,9 +3,8 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { PRODUCTS } from "@/data/products";
 import { cn } from "@/lib/utils";
-import type { ProductCategory } from "@/types";
+import type { Product, ProductCategory } from "@/types";
 
 const FILTERS: { id: "all" | ProductCategory; label: string }[] = [
   { id: "all", label: "All" },
@@ -15,7 +14,7 @@ const FILTERS: { id: "all" | ProductCategory; label: string }[] = [
   { id: "custom", label: "Custom" },
 ];
 
-export function ShopCatalog() {
+export function ShopCatalog({ products: initialProducts }: { products: Product[] }) {
   const params = useSearchParams();
   const initial = (params.get("category") as ProductCategory | null) ?? "all";
   const [category, setCategory] = useState<"all" | ProductCategory>(
@@ -27,7 +26,7 @@ export function ShopCatalog() {
   );
 
   const products = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...initialProducts];
     if (category !== "all") {
       list = list.filter((p) => p.category === category);
     }
@@ -42,7 +41,7 @@ export function ShopCatalog() {
     if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
     return list;
-  }, [category, query, sort]);
+  }, [category, query, sort, initialProducts]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 pb-20 pt-28 sm:px-6 lg:px-8">

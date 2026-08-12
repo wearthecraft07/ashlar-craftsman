@@ -1,27 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  FileText,
+  Megaphone,
   Package,
-  ShoppingBag,
   Shirt,
+  ShoppingBag,
+  Sparkles,
   Users,
 } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { href: "/admin", label: "Overview", icon: BarChart3 },
+  { href: "/admin", label: "Dashboard", icon: BarChart3 },
   { href: "/admin/products", label: "Products", icon: Shirt },
+  { href: "/admin/categories", label: "Categories", icon: Package },
+  { href: "/admin/avatar", label: "Avatar Studio", icon: Sparkles },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/analytics", label: "Analytics", icon: Package },
+  { href: "/admin/content", label: "Content", icon: FileText },
+  { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function signOut() {
+    const supabase = createClient();
+    if (supabase) await supabase.auth.signOut();
+    router.replace("/admin/login");
+    router.refresh();
+  }
 
   return (
     <div className="min-h-screen bg-[#111111] text-white">
@@ -61,6 +77,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+          <button
+            type="button"
+            onClick={signOut}
+            className="mt-6 w-full rounded-2xl border border-white/15 px-4 py-3 text-left text-sm text-white/70 transition hover:bg-white/10 hover:text-white"
+          >
+            Sign out
+          </button>
         </aside>
         <main className="min-w-0 flex-1">{children}</main>
       </div>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { AdminProducts } from "@/components/admin/AdminDashboard";
+import { AdminProductsManager } from "@/components/admin/AdminProductsManager";
 
 export const metadata: Metadata = { title: "Admin · Products" };
 
 export default function AdminProductsPage() {
-  return <AdminProducts />;
+  return <AdminProductsManager />;
 }

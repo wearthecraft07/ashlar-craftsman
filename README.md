@@ -1,6 +1,6 @@
 # the ASHLAR CRAFTSMAN
 
-Premium 2D cartoon streetwear storefront and avatar studio.
+Premium lodge-inspired storefront and Avatar Studio.
 
 **Craft Your Journey.**
 
@@ -8,10 +8,10 @@ Premium 2D cartoon streetwear storefront and avatar studio.
 
 - Next.js 15 (App Router) + React + TypeScript
 - Tailwind CSS + Framer Motion
-- Supabase (auth + database)
-- Stripe (checkout + webhooks)
-- Cloudinary (image uploads)
-- Zustand (cart)
+- Supabase (Auth, Postgres, RLS)
+- Stripe (Checkout + webhooks)
+- Cloudinary (media uploads)
+- Zustand (guest cart)
 
 ## Quick start
 
@@ -23,47 +23,46 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-The site runs in **demo mode** without API keys:
+Without API keys the storefront still runs using static catalog fallbacks and local cart/avatar saves. Admin requires Supabase.
 
-- Avatar save/edit via `localStorage`
-- Catalog, cart, and demo checkout work locally
-- Admin dashboard uses sample analytics/orders
+## Production setup (Supabase)
 
-## Configure integrations
+1. Create a Supabase project.
+2. In the SQL editor, run:
+   - `supabase/schema.sql`
+   - `supabase/seed.sql`
+3. Put these in `.env.local` / Vercel:
 
-Copy `.env.example` → `.env.local` and fill in:
-
-1. **Supabase** — create a project, run `supabase/schema.sql`, add URL + anon key
-2. **Stripe** — add publishable + secret keys (optional webhook secret)
-3. **Cloudinary** — add cloud name + API key/secret for admin uploads
-
-## Features
-
-### Homepage
-Hero with brand lockup, animated avatars, featured collections, best sellers, customer gallery, testimonials, newsletter.
-
-### Avatar Studio (`/avatar`)
-Modular customization for face, skin, eyes, brows, nose, mouth, hair, beard, glasses, hats, body, clothing, shoes, expressions, and poses. Save/edit, rotate/zoom, shirt color preview, SVG download, add custom tee to cart.
-
-### Shop
-Catalog filters, product pages, cart, Stripe checkout (or local demo), order history.
-
-### Admin (`/admin`)
-Upload designs, manage inventory, view orders/customers, analytics overview.
-
-## Project structure
-
+```env
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+ADMIN_EMAILS=you@example.com
 ```
-src/
-  app/           # routes + API
-  avatar/        # SVG avatar system
-  components/    # reusable UI
-  data/          # catalog + content
-  lib/           # supabase, stripe, cloudinary, cart
-  types/         # shared types
-supabase/
-  schema.sql     # database schema + RLS
-```
+
+4. Create an Auth user with that email, then sign in at `/admin/login`.
+   - `ADMIN_EMAILS` auto-promotes matching profiles to `super_admin` (via service role).
+   - Or manually: `update public.profiles set role = 'super_admin' where email = 'you@example.com';`
+
+5. Optional: Stripe + Cloudinary keys for checkout and uploads.
+
+## What’s live now (Phase 0–1 foundation)
+
+- Expanded production schema (products, categories, avatar items, content, announcements, media, orders, roles)
+- Secure `/admin/login` + middleware gate (customers cannot access admin)
+- Admin product CRUD + category CRUD against Supabase
+- Shop/best-sellers read from database when available, else static fallback
+- Footer no longer exposes a public Admin link
+- Placeholder admin sections for Avatar / Content / Announcements (tables ready)
+
+## Next phases
+
+- Stripe webhook → persist orders + inventory decrement (server-priced checkout)
+- Avatar admin CRUD + DB-driven studio options / image layers
+- CMS content + announcements on the storefront
+- Customer accounts, saved designs sync, order history
+- Media library + dashboard analytics from real data
 
 ## Scripts
 

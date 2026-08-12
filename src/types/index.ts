@@ -2,7 +2,34 @@ export type ProductCategory =
   | "essentials"
   | "premium"
   | "limited"
-  | "custom";
+  | "custom"
+  | (string & {});
+
+export type ProductStatus = "draft" | "published" | "out_of_stock" | "archived";
+
+export type AdminRole = "admin" | "super_admin";
+
+export type UserRole = "customer" | AdminRole;
+
+export type Profile = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  role: UserRole;
+  is_admin: boolean;
+  disabled: boolean;
+  created_at: string;
+  updated_at?: string;
+};
+
+export type Category = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  sort_order: number;
+  enabled: boolean;
+};
 
 export type Product = {
   id: string;
@@ -11,7 +38,10 @@ export type Product = {
   description: string;
   price: number;
   compareAtPrice?: number;
+  salePrice?: number;
+  sku?: string;
   category: ProductCategory;
+  categoryId?: string;
   colors: ProductColor[];
   sizes: string[];
   images: string[];
@@ -19,7 +49,10 @@ export type Product = {
   featured?: boolean;
   bestSeller?: boolean;
   inventory: number;
+  lowStockThreshold?: number;
+  status?: ProductStatus;
   createdAt: string;
+  updatedAt?: string;
 };
 
 export type ProductColor = {
@@ -46,9 +79,37 @@ export type OrderStatus =
   | "pending"
   | "paid"
   | "processing"
+  | "ready"
   | "shipped"
   | "delivered"
-  | "cancelled";
+  | "cancelled"
+  | "refunded";
+
+export type AvatarItemRecord = {
+  id: string;
+  category_id: string;
+  key: string;
+  name: string;
+  description: string;
+  asset_url: string | null;
+  meta: Record<string, unknown>;
+  layer_order: number | null;
+  sort_order: number;
+  active: boolean;
+  featured: boolean;
+  price: number | null;
+  product_id: string | null;
+};
+
+export type Announcement = {
+  id: string;
+  title: string;
+  body: string;
+  published: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+  created_at: string;
+};
 
 export type Order = {
   id: string;

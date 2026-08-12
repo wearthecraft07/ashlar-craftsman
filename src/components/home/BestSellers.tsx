@@ -1,10 +1,11 @@
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { getBestSellers } from "@/data/products";
 import { Button } from "@/components/ui/Button";
+import { listProducts } from "@/lib/catalog/products";
 
-export function BestSellers() {
-  const products = getBestSellers();
+export async function BestSellers() {
+  const { products } = await listProducts({ bestSeller: true });
+  const list = products.slice(0, 4);
 
   return (
     <section className="bg-[var(--lodge-blue)] px-4 py-20 text-[var(--ivory)] sm:px-6 lg:px-8">
@@ -21,7 +22,7 @@ export function BestSellers() {
           </Button>
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product, index) => (
+          {list.map((product, index) => (
             <div
               key={product.id}
               className="[&_h3]:text-[var(--ivory)] [&_p]:text-[var(--ivory)]/60"
