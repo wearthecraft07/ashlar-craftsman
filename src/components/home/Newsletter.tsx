@@ -7,12 +7,28 @@ import { Button } from "@/components/ui/Button";
 export function Newsletter() {
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function onSubmit(event: FormEvent) {
+  async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!email.includes("@")) return;
-    setDone(true);
-    setEmail("");
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Subscribe failed");
+      setDone(true);
+      setEmail("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Subscribe failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -49,14 +65,19 @@ export function Newsletter() {
               placeholder="you@email.com"
               className="h-12 flex-1 rounded-full border border-[var(--gold)]/30 bg-white/5 px-5 text-sm text-[var(--ivory)] outline-none ring-[var(--gold)] placeholder:text-[var(--ivory)]/40 focus:ring-2"
             />
-            <Button type="submit" variant="gold">
-              Subscribe
+            <Button type="submit" variant="gold" disabled={loading}>
+              {loading ? "Saving…" : "Subscribe"}
             </Button>
           </form>
         </div>
         {done && (
           <p className="mt-4 text-sm text-[var(--gold)]" role="status">
             You&apos;re on the list. Craft awaits.
+          </p>
+        )}
+        {error && (
+          <p className="mt-4 text-sm text-red-300" role="alert">
+            {error}
           </p>
         )}
       </motion.div>

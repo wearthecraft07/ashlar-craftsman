@@ -81,6 +81,40 @@ export function AvatarStudio({
 
   useEffect(() => {
     setSaved(loadAvatars());
+    void (async () => {
+      try {
+        const res = await fetch("/api/avatars");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!Array.isArray(data.avatars)) return;
+        const cloud: SavedAvatar[] = data.avatars.map(
+          (row: {
+            id: string;
+            name: string;
+            config: AvatarConfig;
+            shirt_color: string;
+            updated_at: string;
+          }) => ({
+            id: row.id,
+            name: row.name,
+            config: row.config,
+            shirtColor: row.shirt_color,
+            updatedAt: row.updated_at,
+          }),
+        );
+        if (!cloud.length) return;
+        setSaved((prev) => {
+          const merged = [
+            ...cloud,
+            ...prev.filter((local) => !cloud.some((c) => c.id === local.id)),
+          ].slice(0, 12);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          return merged;
+        });
+      } catch {
+        // Keep local saves when API unavailable.
+      }
+    })();
   }, []);
 
   function scrollOptions(direction: "up" | "down") {
