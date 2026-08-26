@@ -47,7 +47,7 @@ export function Footer() {
             Support
           </p>
           <ul className="mt-4 space-y-2 text-sm text-[var(--ivory)]/75">
-            <li>hello@ashlarcraftsman.com</li>
+            <li>theashlar357@gmail.com</li>
             <li>Shipping worldwide</li>
             <li>Secure Stripe checkout</li>
           </ul>

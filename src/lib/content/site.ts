@@ -12,7 +12,7 @@ const DEFAULT_HERO = {
 
 const DEFAULT_FOOTER = {
   copyright: "the ASHLAR CRAFTSMAN. All rights reserved.",
-  email: "hello@ashlarcraftsman.com",
+  email: "theashlar357@gmail.com",
   social: { instagram: "", facebook: "", x: "" },
 };
 

@@ -229,7 +229,7 @@ values
     'footer',
     '{
       "copyright": "the ASHLAR CRAFTSMAN. All rights reserved.",
-      "email": "hello@ashlarcraftsman.com",
+      "email": "theashlar357@gmail.com",
       "social": {
         "instagram": "",
         "facebook": "",
