@@ -9,7 +9,11 @@ import { formatCurrency } from "@/lib/utils";
 const fieldClass =
   "mt-2 h-12 w-full rounded-full border border-black/10 px-4 outline-none ring-[var(--gold)] focus:ring-2";
 
-export function CheckoutForm() {
+export function CheckoutForm({
+  paymentsEnabled = false,
+}: {
+  paymentsEnabled?: boolean;
+}) {
   const items = useCartStore((s) => s.items);
   const clear = useCartStore((s) => s.clear);
   const router = useRouter();
@@ -108,8 +112,9 @@ export function CheckoutForm() {
           Checkout
         </h1>
         <p className="mt-3 text-sm text-[var(--muted)]">
-          Prices, tax, and shipping are calculated on the server. Stripe is used
-          when configured; otherwise demo checkout still creates an order.
+          {paymentsEnabled
+            ? "Secure checkout powered by Stripe (test mode). Use card 4242 4242 4242 4242."
+            : "Stripe is not configured yet — this will place a demo order without charging a card."}
         </p>
 
         <div className="mt-8 space-y-4">
@@ -192,7 +197,11 @@ export function CheckoutForm() {
           className="mt-8 w-full"
           disabled={loading}
         >
-          {loading ? "Processing..." : `Pay ${formatCurrency(total)}`}
+          {loading
+            ? "Processing..."
+            : paymentsEnabled
+              ? `Pay with Stripe · ${formatCurrency(total)}`
+              : `Complete demo order · ${formatCurrency(total)}`}
         </Button>
       </form>
 

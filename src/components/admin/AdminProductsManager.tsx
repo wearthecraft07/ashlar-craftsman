@@ -37,6 +37,15 @@ export function AdminProductsManager() {
   const [message, setMessage] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const imageList = form.images
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const listPriceCents = Number(form.price) || 0;
+  const salePriceCents = form.sale_price ? Number(form.sale_price) : null;
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/products");
@@ -161,11 +170,19 @@ export function AdminProductsManager() {
     await load();
   }
 
-  async function onUpload(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const body = new FormData(event.currentTarget);
+  async function uploadSelectedFile(file: File | null) {
+    if (!file) {
+      setMessage("Choose an image file first.");
+      return;
+    }
+    const body = new FormData();
+    body.set("file", file);
+    body.set("folder", "ashlar-craftsman/products");
+    setUploading(true);
+    setMessage("");
     const res = await fetch("/api/upload", { method: "POST", body });
     const data = await res.json();
+    setUploading(false);
     if (!res.ok) {
       setMessage(data.error || "Upload failed.");
       return;
@@ -179,6 +196,17 @@ export function AdminProductsManager() {
       }));
       setMessage("Image uploaded and added to the form.");
     }
+  }
+
+  function removeImage(url: string) {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t && t !== url)
+        .join(","),
+    }));
   }
 
   return (
@@ -207,7 +235,18 @@ export function AdminProductsManager() {
                 className="rounded-2xl border border-white/10 bg-white/5 p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
+                  <div className="flex gap-3">
+                    {product.images[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={product.images[0]}
+                        alt=""
+                        className="h-14 w-14 rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 rounded-xl bg-white/10" />
+                    )}
+                    <div>
                     <p className="font-semibold">{product.name}</p>
                     <p className="text-sm text-white/50">
                       {product.slug} · {product.category} ·{" "}
@@ -217,6 +256,7 @@ export function AdminProductsManager() {
                       {formatCurrency(product.price)} · {product.inventory} in
                       stock
                     </p>
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -298,6 +338,12 @@ export function AdminProductsManager() {
                   value={form.sale_price}
                   onChange={(v) => setForm((p) => ({ ...p, sale_price: v }))}
                 />
+                <p className="col-span-2 text-xs text-white/45">
+                  Preview:{" "}
+                  {salePriceCents
+                    ? `${formatCurrency(salePriceCents)} (was ${formatCurrency(listPriceCents)})`
+                    : formatCurrency(listPriceCents)}
+                </p>
                 <Field
                   label="SKU"
                   value={form.sku}
@@ -355,6 +401,59 @@ export function AdminProductsManager() {
                 value={form.images}
                 onChange={(v) => setForm((p) => ({ ...p, images: v }))}
               />
+              {imageList.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {imageList.map((url) => (
+                    <div
+                      key={url}
+                      className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/15"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute right-0.5 top-0.5 rounded-full bg-black/70 px-1.5 text-[10px] text-white"
+                        aria-label="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="rounded-2xl border border-dashed border-white/20 bg-black/10 p-3">
+                <p className="mb-2 text-xs uppercase tracking-[0.18em] text-white/45">
+                  Upload image
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    id="product-image-upload"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="block max-w-full text-sm text-white/70"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={uploading}
+                    onClick={() => {
+                      const input = document.getElementById(
+                        "product-image-upload",
+                      ) as HTMLInputElement | null;
+                      void uploadSelectedFile(input?.files?.[0] ?? null);
+                      if (input) input.value = "";
+                    }}
+                  >
+                    {uploading ? "Uploading…" : "Upload to Cloudinary"}
+                  </Button>
+                </div>
+              </div>
               <div className="flex flex-wrap gap-4 text-sm">
                 <label className="inline-flex items-center gap-2">
                   <input
@@ -391,20 +490,6 @@ export function AdminProductsManager() {
                   </Button>
                 )}
               </div>
-            </form>
-          </Panel>
-
-          <Panel title="Upload image">
-            <form onSubmit={onUpload} className="space-y-3">
-              <input
-                type="file"
-                name="file"
-                accept="image/*"
-                className="block w-full text-sm text-white/70"
-              />
-              <Button type="submit" variant="ghost" size="sm">
-                Upload to Cloudinary
-              </Button>
             </form>
           </Panel>
         </div>

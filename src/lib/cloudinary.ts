@@ -25,6 +25,5 @@ export function configureCloudinary() {
 }
 
 export function isCloudinaryConfigured() {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  return Boolean(cloudName && !cloudName.includes("your_cloud"));
+  return Boolean(configureCloudinary());
 }

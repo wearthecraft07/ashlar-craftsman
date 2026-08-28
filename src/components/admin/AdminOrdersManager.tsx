@@ -32,13 +32,19 @@ export function AdminOrdersManager() {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [status, setStatus] = useState("");
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState<OrderRow | null>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQ(q), 300);
+    return () => window.clearTimeout(timer);
+  }, [q]);
 
   const load = useCallback(async () => {
     const params = new URLSearchParams();
     if (status) params.set("status", status);
-    if (q.trim()) params.set("q", q.trim());
+    if (debouncedQ.trim()) params.set("q", debouncedQ.trim());
     const res = await fetch(`/api/admin/orders?${params}`);
     const data = await res.json();
     if (!res.ok) {
@@ -46,13 +52,19 @@ export function AdminOrdersManager() {
       return;
     }
     setOrders(data.orders ?? []);
-  }, [status, q]);
+  }, [status, debouncedQ]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   async function updateStatus(id: string, nextStatus: string) {
+    if (
+      (nextStatus === "cancelled" || nextStatus === "refunded") &&
+      !confirm(`Mark this order as ${nextStatus}?`)
+    ) {
+      return;
+    }
     const res = await fetch("/api/admin/orders", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
