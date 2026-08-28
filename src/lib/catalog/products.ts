@@ -1,6 +1,6 @@
 import { PRODUCTS } from "@/data/products";
 import { mapDbProduct, type DbProduct } from "@/lib/catalog/map-product";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Product } from "@/types";
 
 function staticProducts(includeUnpublished = false): Product[] {
@@ -18,7 +18,7 @@ export async function listProducts(options?: {
   bestSeller?: boolean;
   category?: string;
 }): Promise<{ products: Product[]; source: "database" | "static" }> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (!supabase) {
     let products = staticProducts(options?.includeUnpublished);
@@ -61,7 +61,7 @@ export async function listProducts(options?: {
 export async function getProductBySlug(
   slug: string,
 ): Promise<{ product: Product | null; source: "database" | "static" }> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   if (supabase) {
     const { data } = await supabase
@@ -84,7 +84,7 @@ export async function getProductBySlug(
 }
 
 export async function listCategories() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   if (!supabase) {
     const fromProducts = Array.from(
       new Set(PRODUCTS.map((p) => String(p.category))),

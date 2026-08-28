@@ -1,7 +1,7 @@
 import { PRODUCTS } from "@/data/products";
 import { mapDbProduct, type DbProduct } from "@/lib/catalog/map-product";
 import { createServiceClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Product } from "@/types";
 
 export type CheckoutLineInput = {
@@ -36,7 +36,7 @@ async function loadProduct(
   productId: string,
   slug?: string,
 ): Promise<Product | null> {
-  const supabase = createServiceClient() ?? (await createClient());
+  const supabase = createServiceClient() ?? createPublicClient();
   if (supabase) {
     const byId = await supabase
       .from("products")

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Announcement } from "@/types";
 
 const DEFAULT_HERO = {
@@ -25,7 +25,7 @@ export async function getSiteContent<T extends Record<string, unknown>>(
   key: string,
   fallback: T,
 ): Promise<T> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   if (!supabase) return fallback;
 
   const { data } = await supabase
@@ -51,7 +51,7 @@ export async function getAboutContent() {
 }
 
 export async function getActiveAnnouncements(): Promise<Announcement[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   if (!supabase) return [];
 
   const { data } = await supabase

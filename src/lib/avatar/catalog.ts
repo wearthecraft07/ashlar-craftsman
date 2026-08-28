@@ -2,7 +2,7 @@ import {
   AVATAR_CATEGORIES,
   AVATAR_OPTIONS,
 } from "@/avatar/options";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type StudioOption = {
   id: string;
@@ -46,7 +46,7 @@ export async function getAvatarCatalog(): Promise<{
     }),
   );
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   if (!supabase) {
     return { categories: staticCategories, source: "static" };
   }
