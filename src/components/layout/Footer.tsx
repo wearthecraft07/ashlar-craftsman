@@ -47,9 +47,24 @@ export function Footer() {
             Support
           </p>
           <ul className="mt-4 space-y-2 text-sm text-[var(--ivory)]/75">
-            <li>theashlar357@gmail.com</li>
+            <li>
+              <a
+                href="mailto:theashlar357@gmail.com"
+                className="hover:text-[var(--gold)]"
+              >
+                theashlar357@gmail.com
+              </a>
+            </li>
             <li>Shipping worldwide</li>
             <li>Secure Stripe checkout</li>
+            <li>
+              <Link
+                href="/admin/login"
+                className="text-[var(--ivory)]/45 hover:text-[var(--gold)]"
+              >
+                Admin login
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
