@@ -14,6 +14,15 @@ const LINE = "#1A120C";
 const GOLD = "#C9A227";
 const SW = 4; // bold 3–5px outlines
 
+/** Absolute mark URLs so downloaded SVGs still resolve logos. */
+function markSrc(path: `/${string}`) {
+  const base = (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "")
+  ).replace(/\/$/, "");
+  return base ? `${base}${path}` : path;
+}
+
 function poseTransform(pose: string) {
   switch (pose) {
     case "wave":
@@ -178,7 +187,7 @@ export function AvatarCanvas({ config, className, decorative }: Props) {
               )}
               {config.apron === "mm" && (
                 <image
-                  href="/mm-apron-mark.png"
+                  href={markSrc("/mm-apron-mark.png")}
                   x="116"
                   y="246"
                   width="48"
@@ -544,7 +553,7 @@ function FormalClothing({
         />
         <circle cx="140" cy="192" r="3" fill={gold} />
         <image
-          href="/shirt-mark.png"
+          href={markSrc("/shirt-mark.png")}
           x="124"
           y="208"
           width="32"
@@ -746,7 +755,7 @@ function FormalClothing({
         strokeWidth="2.5"
       />
       <image
-        href="/shirt-mark.png"
+        href={markSrc("/shirt-mark.png")}
         x="152"
         y="210"
         width="22"
