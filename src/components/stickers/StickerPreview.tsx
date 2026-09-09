@@ -44,10 +44,12 @@ export function StickerPreview({
   async function save(format: "png" | "svg") {
     if (!stageRef.current) return;
     setBusy(true);
-    setStatus(format === "png" ? "Saving PNG…" : "Saving SVG…");
+    setStatus(
+      format === "png" ? "Crafting your sticker…" : "Preparing SVG…",
+    );
     try {
       await exportStickerFromStage(stageRef.current, sticker, format);
-      setStatus(format === "png" ? "PNG saved." : "SVG saved.");
+      setStatus(format === "png" ? "Sticker saved." : "SVG saved.");
     } catch {
       setStatus("Could not export this sticker. Try again.");
     } finally {
@@ -56,15 +58,16 @@ export function StickerPreview({
   }
 
   async function share() {
-    if (!navigator.share || !stageRef.current) {
-      setStatus("Sharing isn’t available on this device — save the PNG instead.");
-      return;
-    }
+    if (!stageRef.current) return;
     setBusy(true);
+    setStatus("Crafting your sticker…");
     try {
       await exportStickerFromStage(stageRef.current, sticker, "png");
-      setStatus("Saved — share the file from your downloads.");
-      // Native share of generated blobs varies; download is the reliable path.
+      if (typeof navigator.share === "function") {
+        setStatus("Saved — share from your downloads or Photos.");
+      } else {
+        setStatus("PNG saved — ready to send.");
+      }
     } catch {
       setStatus("Could not prepare share file.");
     } finally {
@@ -74,16 +77,14 @@ export function StickerPreview({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--lodge-blue)]/55 p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--lodge-blue)]/60 p-0 sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={sticker.name}
       onClick={onClose}
     >
       <div
-        className={cn(
-          "relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[1.75rem] bg-[var(--ivory)] shadow-2xl sm:rounded-[1.75rem]",
-        )}
+        className="relative flex max-h-[94vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[1.75rem] bg-[var(--ivory)] shadow-2xl sm:rounded-[1.75rem]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[var(--stone)] px-4 py-3 sm:px-5">
@@ -106,11 +107,12 @@ export function StickerPreview({
         </div>
 
         <div className="overflow-y-auto px-4 py-4 sm:px-6">
-          <div className="mx-auto max-w-sm">
+          <div className="mx-auto max-w-sm rounded-[1.5rem] bg-[color-mix(in_srgb,var(--stone)_35%,white)] p-3">
             <StickerRenderer
               sticker={sticker}
               config={config}
               stageRef={stageRef}
+              showOutline
             />
           </div>
 
@@ -121,7 +123,15 @@ export function StickerPreview({
               className="w-full"
             >
               <Download className="h-4 w-4" />
-              Save PNG
+              Save Sticker
+            </Button>
+            <Button
+              variant={favorited ? "dark" : "white"}
+              onClick={onToggleFavorite}
+              className="w-full"
+            >
+              <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
+              {favorited ? "Favorited" : "Favorite"}
             </Button>
             <Button
               variant="ghost"
@@ -131,14 +141,6 @@ export function StickerPreview({
             >
               <Download className="h-4 w-4" />
               Save SVG
-            </Button>
-            <Button
-              variant={favorited ? "dark" : "white"}
-              onClick={onToggleFavorite}
-              className="w-full"
-            >
-              <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
-              {favorited ? "Favorited" : "Favorite"}
             </Button>
             <Button
               variant="white"
@@ -157,7 +159,7 @@ export function StickerPreview({
             </p>
           ) : (
             <p className="mt-4 text-center text-xs text-[var(--walnut)]/80">
-              Transparent PNG — ready for texts, chats, and lodge groups.
+              Transparent PNG with sticker outline — ready for texts and lodge chats.
             </p>
           )}
         </div>

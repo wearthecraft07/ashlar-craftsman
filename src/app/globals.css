@@ -114,6 +114,20 @@ header a.nav-link {
     0 12px 40px rgba(242, 217, 138, 0.35);
 }
 
+/* Collectible sticker silhouette preview (export uses true alpha outline). */
+.sticker-outline-preview {
+  filter:
+    drop-shadow(0 0 0.5px #FFFCF5)
+    drop-shadow(2px 0 0 #FFFCF5)
+    drop-shadow(-2px 0 0 #FFFCF5)
+    drop-shadow(0 2px 0 #FFFCF5)
+    drop-shadow(0 -2px 0 #FFFCF5)
+    drop-shadow(1.5px 1.5px 0 #FFFCF5)
+    drop-shadow(-1.5px 1.5px 0 #FFFCF5)
+    drop-shadow(1.5px -1.5px 0 #FFFCF5)
+    drop-shadow(-1.5px -1.5px 0 #FFFCF5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

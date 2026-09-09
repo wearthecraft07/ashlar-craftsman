@@ -1,45 +1,116 @@
+/** Sticker composition types — avatar config stays in @/types AvatarConfig. */
+
 export type StickerCategoryId =
   | "greetings"
   | "masonic-life"
   | "degrees"
-  | "tools"
   | "humor"
-  | "celebration"
-  | "expressions"
-  | "daily";
+  | "celebration";
 
-export type StickerBackground =
-  | "none"
-  | "parchment"
-  | "gold-ring"
-  | "columns"
-  | "lodge-night"
+export type StickerPackId =
+  | "lodge-life"
+  | "masonic-humor"
+  | "degree-journey"
+  | "holidays"
+  | "traveling-mason"
+  | "coffee-masonry"
+  | "classic-masonic"
+  | "everyday";
+
+export type StickerPoseId =
+  | "standing"
+  | "waving"
+  | "thumbsUp"
+  | "pointing"
+  | "celebrating"
+  | "thinking"
   | "coffee"
-  | "journey";
+  | "reading"
+  | "walking"
+  | "handsOnHips"
+  | "proud"
+  | "surprised"
+  | "laughing"
+  | "greeting"
+  | "holdingGavel"
+  | "holdingApron"
+  | "holdingWorkingTool"
+  | "prayingOrReflective";
+
+export type StickerExpressionId =
+  | "neutral"
+  | "happy"
+  | "smiling"
+  | "laughing"
+  | "proud"
+  | "surprised"
+  | "confused"
+  | "thinking"
+  | "serious"
+  | "excited"
+  | "sleepy"
+  | "wink"
+  | "peaceful";
 
 export type StickerPropId =
-  | "coffee"
-  | "gavel-float"
-  | "apron-fold"
-  | "columns-pair"
-  | "ashlar"
-  | "spark"
+  | "squareAndCompasses"
+  | "gavel"
+  | "masonicApron"
+  | "coffeeCup"
+  | "workingTools"
+  | "trowel"
+  | "level"
+  | "plumb"
+  | "lodgeBuilding"
+  | "columns"
+  | "tracingBoard"
+  | "book"
+  | "degreeCertificate"
+  | "travelBag"
+  | "sun"
   | "moon"
-  | "sun";
+  | "spark";
+
+export type StickerBackgroundId =
+  | "transparent"
+  | "sunrise"
+  | "evening"
+  | "lodge"
+  | "parchment"
+  | "goldRing"
+  | "journey";
+
+export type StickerTextStyle = "banner" | "badge" | "soft";
+
+export type StickerComposition = {
+  pose: StickerPoseId;
+  expression: StickerExpressionId;
+  props?: StickerPropId[];
+  text?: string;
+  textStyle?: StickerTextStyle;
+  background?: StickerBackgroundId;
+  /** Optional AvatarConfig field overrides (apron/tool/etc). */
+  avatarOverrides?: Partial<{
+    apron: string;
+    tool: string;
+    mouth: string;
+  }>;
+};
 
 export type StickerDefinition = {
   id: string;
   name: string;
   category: StickerCategoryId;
-  text?: string;
-  pose?: string;
-  expression?: string;
-  mouth?: string;
-  apron?: string;
-  tool?: string;
-  props?: StickerPropId[];
-  background?: StickerBackground;
+  pack: StickerPackId;
+  composition: StickerComposition;
   featured?: boolean;
+};
+
+export type StickerPack = {
+  id: StickerPackId;
+  name: string;
+  description: string;
+  stickers: StickerDefinition[];
 };
 
 export type StickerCategoryMeta = {

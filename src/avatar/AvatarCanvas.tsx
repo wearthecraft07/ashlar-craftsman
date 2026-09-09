@@ -30,11 +30,90 @@ function poseTransform(pose: string) {
     case "wave":
       return "translate(3,0) rotate(-2 140 200)";
     case "power":
+    case "celebrate":
+    case "hips":
       return "translate(0,-2) scale(1.015)";
     case "lean":
       return "translate(-5,2) rotate(2.5 140 200)";
+    case "pointing":
+      return "translate(2,0) rotate(-1 140 200)";
+    case "think":
+      return "translate(-2,0) rotate(-1.5 140 200)";
+    case "pray":
+      return "translate(0,-1)";
+    case "thumbsUp":
+      return "translate(1,-1)";
     default:
       return undefined;
+  }
+}
+
+type ArmLayout = {
+  leftPath: string;
+  rightPath: string;
+  leftHand: { cx: number; cy: number };
+  rightHand: { cx: number; cy: number };
+};
+
+function armLayout(pose: string): ArmLayout {
+  switch (pose) {
+    case "wave":
+      return {
+        leftPath: "M94 186 C68 168 54 128 74 108",
+        rightPath: "M186 186 C204 214 208 246 196 266",
+        leftHand: { cx: 74, cy: 108 },
+        rightHand: { cx: 196, cy: 266 },
+      };
+    case "power":
+    case "hips":
+      return {
+        leftPath: "M94 186 C74 210 66 242 74 262",
+        rightPath: "M186 186 C206 210 214 242 206 262",
+        leftHand: { cx: 74, cy: 262 },
+        rightHand: { cx: 206, cy: 262 },
+      };
+    case "celebrate":
+      return {
+        leftPath: "M94 186 C70 150 62 110 78 88",
+        rightPath: "M186 186 C210 150 218 110 202 88",
+        leftHand: { cx: 78, cy: 88 },
+        rightHand: { cx: 202, cy: 88 },
+      };
+    case "thumbsUp":
+      return {
+        leftPath: "M94 186 C76 214 72 246 84 266",
+        rightPath: "M186 186 C210 170 220 140 214 118",
+        leftHand: { cx: 84, cy: 266 },
+        rightHand: { cx: 214, cy: 118 },
+      };
+    case "pointing":
+      return {
+        leftPath: "M94 186 C76 214 72 246 84 266",
+        rightPath: "M186 186 C220 180 248 168 262 156",
+        leftHand: { cx: 84, cy: 266 },
+        rightHand: { cx: 262, cy: 156 },
+      };
+    case "think":
+      return {
+        leftPath: "M94 186 C70 160 78 130 100 112",
+        rightPath: "M186 186 C204 214 208 246 196 266",
+        leftHand: { cx: 100, cy: 112 },
+        rightHand: { cx: 196, cy: 266 },
+      };
+    case "pray":
+      return {
+        leftPath: "M94 186 C110 210 124 228 136 236",
+        rightPath: "M186 186 C170 210 156 228 144 236",
+        leftHand: { cx: 136, cy: 236 },
+        rightHand: { cx: 144, cy: 236 },
+      };
+    default:
+      return {
+        leftPath: "M94 186 C76 214 72 246 84 266",
+        rightPath: "M186 186 C204 214 208 246 196 266",
+        leftHand: { cx: 84, cy: 266 },
+        rightHand: { cx: 196, cy: 266 },
+      };
   }
 }
 
@@ -60,12 +139,25 @@ export function AvatarCanvas({
     config.expression === "laugh" || config.mouth === "grin";
   const smirk =
     config.expression === "confident" || config.mouth === "smirk";
+  const surprised =
+    config.expression === "surprised" || config.mouth === "open";
+  const sleepy = config.expression === "sleepy";
+  const serious =
+    config.expression === "serious" ||
+    config.expression === "thinking" ||
+    config.expression === "confused" ||
+    config.mouth === "neutral";
   const smile =
     !laugh &&
     !smirk &&
+    !surprised &&
+    !sleepy &&
+    !serious &&
     (config.expression === "smile" ||
       config.expression === "friendly" ||
       config.mouth === "smile");
+
+  const arms = armLayout(config.pose);
 
   const gloveFill =
     config.gloves === "cream" ? "#F3E6C8" : config.gloves === "white" ? "#F7F7F5" : null;
@@ -210,26 +302,14 @@ export function AvatarCanvas({
           {/* Arms */}
           <g>
             <path
-              d={
-                config.pose === "wave"
-                  ? "M94 186 C68 168 54 128 74 108"
-                  : config.pose === "power"
-                    ? "M94 186 C74 210 66 242 74 262"
-                    : "M94 186 C76 214 72 246 84 266"
-              }
+              d={arms.leftPath}
               fill="none"
               stroke={`url(#cloth-${uid})`}
               strokeWidth="20"
               strokeLinecap="round"
             />
             <path
-              d={
-                config.pose === "wave"
-                  ? "M94 186 C68 168 54 128 74 108"
-                  : config.pose === "power"
-                    ? "M94 186 C74 210 66 242 74 262"
-                    : "M94 186 C76 214 72 246 84 266"
-              }
+              d={arms.leftPath}
               fill="none"
               stroke={LINE}
               strokeWidth={SW}
@@ -237,22 +317,14 @@ export function AvatarCanvas({
               opacity="0.9"
             />
             <path
-              d={
-                config.pose === "power"
-                  ? "M186 186 C206 210 214 242 206 262"
-                  : "M186 186 C204 214 208 246 196 266"
-              }
+              d={arms.rightPath}
               fill="none"
               stroke={`url(#cloth-${uid})`}
               strokeWidth="20"
               strokeLinecap="round"
             />
             <path
-              d={
-                config.pose === "power"
-                  ? "M186 186 C206 210 214 242 206 262"
-                  : "M186 186 C204 214 208 246 196 266"
-              }
+              d={arms.rightPath}
               fill="none"
               stroke={LINE}
               strokeWidth={SW}
@@ -262,15 +334,15 @@ export function AvatarCanvas({
 
             {/* Hands */}
             <Hand
-              cx={config.pose === "wave" ? 74 : config.pose === "power" ? 74 : 84}
-              cy={config.pose === "wave" ? 108 : config.pose === "power" ? 262 : 266}
+              cx={arms.leftHand.cx}
+              cy={arms.leftHand.cy}
               skin={`url(#skin-${uid})`}
               glove={gloveFill}
               ring={config.ring}
             />
             <Hand
-              cx={config.pose === "power" ? 206 : 196}
-              cy={config.pose === "power" ? 262 : 266}
+              cx={arms.rightHand.cx}
+              cy={arms.rightHand.cy}
               skin={`url(#skin-${uid})`}
               glove={gloveFill}
               ring="none"
@@ -413,6 +485,7 @@ export function AvatarCanvas({
           <Eyes
             style={config.eyes}
             wink={wink}
+            sleepy={sleepy}
             line={LINE}
           />
 
@@ -431,10 +504,14 @@ export function AvatarCanvas({
           <g stroke={LINE} strokeWidth="3.8" strokeLinecap="round">
             {laugh ? (
               <path d="M118 142 Q140 168 162 142 Q140 154 118 142 Z" fill="#3A1C14" />
+            ) : surprised ? (
+              <ellipse cx="140" cy="148" rx="10" ry="12" fill="#3A1C14" />
             ) : smirk ? (
               <path d="M124 146 Q140 156 160 140" fill="none" />
             ) : smile ? (
               <path d="M120 144 Q140 162 160 144" fill="none" />
+            ) : sleepy ? (
+              <path d="M124 148 Q140 152 156 148" fill="none" />
             ) : (
               <path d="M124 148 H156" fill="none" />
             )}
@@ -822,14 +899,22 @@ function Hand({
 function Eyes({
   style,
   wink,
+  sleepy = false,
   line,
 }: {
   style: string;
   wink: boolean;
+  sleepy?: boolean;
   line: string;
 }) {
   const rx = style === "wide" ? 13 : style === "almond" ? 12 : 11;
-  const ry = style === "lidded" ? 7 : style === "almond" ? 10 : 12;
+  const ry = sleepy
+    ? 5
+    : style === "lidded"
+      ? 7
+      : style === "almond"
+        ? 10
+        : 12;
 
   return (
     <g>
@@ -845,12 +930,12 @@ function Eyes({
           strokeLinecap="round"
         />
       )}
-      <circle cx="120" cy="109" r="4.5" fill={line} />
-      <circle cx="117" cy="106" r="1.6" fill="#FFF" />
+      <circle cx="120" cy={sleepy ? 110 : 109} r={sleepy ? 3 : 4.5} fill={line} />
+      <circle cx="117" cy={sleepy ? 108 : 106} r="1.6" fill="#FFF" />
       {!wink && (
         <>
-          <circle cx="164" cy="109" r="4.5" fill={line} />
-          <circle cx="161" cy="106" r="1.6" fill="#FFF" />
+          <circle cx="164" cy={sleepy ? 110 : 109} r={sleepy ? 3 : 4.5} fill={line} />
+          <circle cx="161" cy={sleepy ? 108 : 106} r="1.6" fill="#FFF" />
         </>
       )}
     </g>
