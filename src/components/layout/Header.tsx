@@ -97,7 +97,7 @@ export function Header() {
           </Button>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gold)]/35 bg-[var(--lodge-blue)] text-[var(--ivory)] md:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gold)]/35 bg-[var(--lodge-blue)] text-[#FFFFFF] md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
           >

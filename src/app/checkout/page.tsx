@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { CheckoutForm } from "@/components/shop/CheckoutForm";
-import { isStripeConfigured } from "@/lib/stripe";
+import { isStripeConfigured, isStripeTestMode } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Checkout",
 };
 
 export default function CheckoutPage() {
-  return <CheckoutForm paymentsEnabled={isStripeConfigured()} />;
+  const paymentsEnabled = isStripeConfigured();
+  return (
+    <CheckoutForm
+      paymentsEnabled={paymentsEnabled}
+      testMode={paymentsEnabled && isStripeTestMode()}
+    />
+  );
 }

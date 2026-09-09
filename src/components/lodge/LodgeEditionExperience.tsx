@@ -445,7 +445,7 @@ export function LodgeEditionExperience({ products }: Props) {
                   className={cn(
                     "rounded-full border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]",
                     quantity === q.id
-                      ? "border-[var(--lodge-blue)] bg-[var(--lodge-blue)] text-[var(--ivory)]"
+                      ? "border-[var(--lodge-blue)] bg-[var(--lodge-blue)] text-[#FFFFFF]"
                       : "border-[var(--stone)]/60 text-[var(--lodge-blue)]",
                   )}
                 >

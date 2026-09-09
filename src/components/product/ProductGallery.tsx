@@ -133,7 +133,7 @@ export function ProductGallery({
               "rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]",
               activeView === view.view
-                ? "border-[var(--lodge-blue)] bg-[var(--lodge-blue)] text-[var(--ivory)]"
+                ? "border-[var(--lodge-blue)] bg-[var(--lodge-blue)] text-[#FFFFFF]"
                 : "border-[var(--stone)]/60 text-[var(--walnut)] hover:border-[var(--gold)]",
             )}
           >

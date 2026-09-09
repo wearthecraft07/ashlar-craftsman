@@ -11,8 +11,11 @@ const fieldClass =
 
 export function CheckoutForm({
   paymentsEnabled = false,
+  testMode = false,
 }: {
   paymentsEnabled?: boolean;
+  /** Stripe publishable key is `pk_test_*`. Never used to show test-card numbers. */
+  testMode?: boolean;
 }) {
   const items = useCartStore((s) => s.items);
   const clear = useCartStore((s) => s.clear);
@@ -126,7 +129,9 @@ export function CheckoutForm({
         </h1>
         <p className="mt-3 text-sm text-[var(--muted)]">
           {paymentsEnabled
-            ? "Secure checkout powered by Stripe (test mode). Use card 4242 4242 4242 4242."
+            ? testMode
+              ? "Secure checkout powered by Stripe. Test payments only — no real charges."
+              : "Secure checkout powered by Stripe."
             : "Stripe is not configured yet — this will place a demo order without charging a card."}
         </p>
 

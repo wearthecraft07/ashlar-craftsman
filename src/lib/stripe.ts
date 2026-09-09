@@ -21,3 +21,9 @@ export function isStripeConfigured() {
       !pub.includes("pk_test_..."),
   );
 }
+
+/** True when the publishable key is a Stripe test key (`pk_test_…`). */
+export function isStripeTestMode() {
+  const pub = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+  return pub.startsWith("pk_test");
+}

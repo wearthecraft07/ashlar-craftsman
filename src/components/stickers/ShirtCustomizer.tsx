@@ -418,7 +418,7 @@ function Chip({
       className={cn(
         "rounded-full px-4 py-2.5 text-sm font-semibold transition",
         active
-          ? "bg-[var(--lodge-blue)] text-[var(--ivory)]"
+          ? "bg-[var(--lodge-blue)] text-[#FFFFFF]"
           : "bg-[var(--panel)] text-[var(--walnut)] ring-1 ring-[var(--stone)] hover:ring-[var(--gold)]",
       )}
     >

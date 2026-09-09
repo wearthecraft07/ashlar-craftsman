@@ -116,7 +116,7 @@ export function ProductDetail({ product, relatedProducts }: Props) {
                   onClick={() => setSize(item)}
                   className={`h-11 min-w-11 rounded-full px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                     size === item
-                      ? "bg-[var(--lodge-blue)] text-[var(--ivory)]"
+                      ? "bg-[var(--lodge-blue)] text-[#FFFFFF]"
                       : "bg-black/5 text-[var(--lodge-blue)]"
                   }`}
                 >

@@ -23,7 +23,7 @@ export function StickerCategoryTabs({ categories, active, onChange }: Props) {
               className={cn(
                 "shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold tracking-wide transition",
                 selected
-                  ? "bg-[var(--lodge-blue)] text-[var(--ivory)] shadow-[0_8px_20px_rgba(15,28,46,0.18)]"
+                  ? "bg-[var(--lodge-blue)] text-[#FFFFFF] shadow-[0_8px_20px_rgba(15,28,46,0.18)]"
                   : "bg-[var(--panel)] text-[var(--walnut)] ring-1 ring-[var(--stone)] hover:ring-[var(--gold)]",
               )}
             >
