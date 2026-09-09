@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 
 type Variant = "gold" | "ghost" | "dark" | "white";
 type Size = "sm" | "md" | "lg";
@@ -36,6 +36,7 @@ export function Button({
   href,
   className,
   children,
+  onClick,
   ...props
 }: Props) {
   const classes = cn(
@@ -47,14 +48,25 @@ export function Button({
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link
+        href={href}
+        className={classes}
+        onClick={
+          onClick
+            ? (event) =>
+                (onClick as unknown as MouseEventHandler<HTMLAnchorElement>)(
+                  event,
+                )
+            : undefined
+        }
+      >
         {children}
       </Link>
     );
   }
 
   return (
-    <button className={classes} {...props}>
+    <button className={classes} onClick={onClick} {...props}>
       {children}
     </button>
   );

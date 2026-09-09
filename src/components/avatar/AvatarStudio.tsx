@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/Button";
 import { SHIRT_COLORS } from "@/data/products";
 import type { StudioCategory } from "@/lib/avatar/catalog";
 import { useCartStore } from "@/lib/cart-store";
+import { saveActiveStickerAvatar } from "@/lib/stickers/storage";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig, SavedAvatar } from "@/types";
 
@@ -72,6 +73,7 @@ export function AvatarStudio({
   const [saved, setSaved] = useState<SavedAvatar[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [characterReady, setCharacterReady] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const optionScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollOptionsUp, setCanScrollOptionsUp] = useState(false);
@@ -200,6 +202,13 @@ export function AvatarStudio({
     ].slice(0, 12);
     persist(next);
     setActiveId(entry.id);
+    saveActiveStickerAvatar({
+      id: entry.id,
+      name: entry.name,
+      config: entry.config,
+      shirtColor: entry.shirtColor,
+    });
+    setCharacterReady(true);
 
     try {
       const res = await fetch("/api/avatars", {
@@ -228,7 +237,23 @@ export function AvatarStudio({
     setName(avatar.name);
     setConfig({ ...DEFAULT_AVATAR, ...avatar.config });
     setShirtColor(avatar.shirtColor);
+    setCharacterReady(true);
+    saveActiveStickerAvatar({
+      id: avatar.id,
+      name: avatar.name,
+      config: avatar.config,
+      shirtColor: avatar.shirtColor,
+    });
     setStatus(`Editing “${avatar.name}”.`);
+  }
+
+  function prepareStickers() {
+    saveActiveStickerAvatar({
+      id: activeId ?? `avatar-${Date.now()}`,
+      name: name.trim() || "My Avatar",
+      config,
+      shirtColor,
+    });
   }
 
   async function downloadPreview() {
@@ -591,6 +616,7 @@ export function AvatarStudio({
                 onClick={() => {
                   setConfig(DEFAULT_AVATAR);
                   setActiveId(null);
+                  setCharacterReady(false);
                   setStatus("Reset to defaults.");
                 }}
               >
@@ -601,6 +627,39 @@ export function AvatarStudio({
               <p className="mt-4 text-sm text-[var(--copper)]" role="status">
                 {status}
               </p>
+            )}
+            {characterReady ? (
+              <div className="mt-5 rounded-[1.25rem] border border-[var(--gold)]/50 bg-[color-mix(in_srgb,var(--candle)_28%,white)] p-4 sm:p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
+                  Craft Your Journey
+                </p>
+                <h2 className="mt-2 font-[family-name:var(--font-display)] text-2xl text-[var(--lodge-blue)]">
+                  Your character is ready.
+                </h2>
+                <p className="mt-2 text-sm text-[var(--walnut)]">
+                  Now craft your stickers — greetings, lodge nights, degrees, and
+                  brotherhood moments in your likeness.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Button href="/avatar/stickers" onClick={prepareStickers}>
+                    Continue to Sticker Studio
+                  </Button>
+                  <Button variant="dark" onClick={addToCart}>
+                    Shop your avatar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5">
+                <Button
+                  href="/avatar/stickers"
+                  variant="ghost"
+                  className="w-full sm:w-auto"
+                  onClick={prepareStickers}
+                >
+                  Craft Your Stickers
+                </Button>
+              </div>
             )}
           </div>
 

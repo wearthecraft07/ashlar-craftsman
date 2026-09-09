@@ -31,6 +31,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/avatar/stickers" className="hover:text-[var(--gold)]">
+                Craft Your Stickers
+              </Link>
+            </li>
+            <li>
               <Link href="/shop" className="hover:text-[var(--gold)]">
                 Shop
               </Link>

@@ -8,6 +8,8 @@ type Props = {
   config: AvatarConfig;
   className?: string;
   decorative?: boolean;
+  /** Hide the parchment rounded background (stickers / transparent export). */
+  showBackground?: boolean;
 };
 
 const LINE = "#1A120C";
@@ -36,7 +38,12 @@ function poseTransform(pose: string) {
   }
 }
 
-export function AvatarCanvas({ config, className, decorative }: Props) {
+export function AvatarCanvas({
+  config,
+  className,
+  decorative,
+  showBackground = true,
+}: Props) {
   const uid = useId().replace(/:/g, "");
   const skin = getTone("skin", config.skin);
   const skinShade = getTone("skin", config.skin, "shade");
@@ -103,7 +110,9 @@ export function AvatarCanvas({ config, className, decorative }: Props) {
         </linearGradient>
       </defs>
 
-      <rect width="280" height="360" rx="32" fill={`url(#bg-${uid})`} />
+      {showBackground ? (
+        <rect width="280" height="360" rx="32" fill={`url(#bg-${uid})`} />
+      ) : null}
 
       <g transform={poseTransform(config.pose)}>
         {/* —— BODY (smaller, ~2/3 of figure under oversized head) —— */}
