@@ -11,10 +11,17 @@ import { useCartStore } from "@/lib/cart-store";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/avatar", label: "Avatar Studio" },
   { href: "/shop", label: "Shop" },
   { href: "/#collections", label: "Collections" },
-  { href: "/#gallery", label: "Gallery" },
+  { href: "/avatar", label: "Avatar Studio" },
+  { href: "/#about", label: "About" },
+];
+
+const mobilePriority = [
+  { href: "/shop", label: "Shop" },
+  { href: "/avatar", label: "Avatar Studio" },
+  { href: "/#collections", label: "Collections" },
+  { href: "/#about", label: "About" },
 ];
 
 export function Header() {
@@ -86,7 +93,7 @@ export function Header() {
             )}
           </Link>
           <Button href="/avatar" size="sm" className="hidden sm:inline-flex">
-            Craft Avatar
+            Build Your Craftsman
           </Button>
           <button
             type="button"
@@ -108,7 +115,7 @@ export function Header() {
             className="border-t border-[var(--gold)]/20 bg-[var(--lodge-blue)] px-4 pb-6 pt-2 md:hidden"
           >
             <nav className="flex flex-col gap-3">
-              {links.map((link) => (
+              {mobilePriority.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -118,8 +125,15 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/cart"
+                className="rounded-xl px-3 py-3 text-base font-semibold hover:bg-white/5"
+                style={{ color: "#FFFFFF" }}
+              >
+                Cart{totalItems > 0 ? ` (${totalItems})` : ""}
+              </Link>
               <Button href="/avatar" className="mt-2 w-full">
-                Craft Avatar
+                Build Your Craftsman
               </Button>
             </nav>
           </motion.div>

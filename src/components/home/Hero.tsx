@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { Button } from "@/components/ui/Button";
 import { AvatarCanvas } from "@/avatar/AvatarCanvas";
@@ -24,139 +23,110 @@ const heroAvatars: AvatarConfig[] = [
     skin: "deep",
     hair: "afro",
     glasses: "round",
-    clothing: "barong",
-    clothingColor: "cream",
+    clothing: "formal",
+    clothingColor: "charcoal",
     expression: "smile",
-    pose: "wave",
+    pose: "idle",
     apron: "plain",
     collar: "gold",
-    tool: "gavel",
-    shoes: "dress",
+    tool: "none",
   },
   {
     ...DEFAULT_AVATAR,
     skin: "fair",
-    hair: "bun",
-    hairColor: "chestnut",
+    hair: "short",
+    hairColor: "ink",
     clothing: "tuxedo",
     clothingColor: "black",
     pose: "lean",
-    expression: "wink",
+    expression: "confident",
     apron: "none",
     gloves: "none",
     hat: "none",
   },
 ];
 
-type HeroContent = {
-  title: string;
-  subtitle: string;
-  buttonText: string;
-  buttonHref: string;
-};
-
-export function Hero({
-  content,
-}: {
-  content?: Partial<HeroContent>;
-}) {
-  const title = content?.title || "Craft Your Journey.";
-  const subtitle =
-    content?.subtitle ||
-    "A lodge-inspired studio of traditional craftsmanship. Build an original avatar, dress the craft, and wear the mark.";
-  const buttonText = content?.buttonText || "Build Your Avatar";
-  const buttonHref = content?.buttonHref || "/avatar";
-
+export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-24 sm:pt-28">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(242,217,138,0.28),_transparent_55%),linear-gradient(180deg,#F7F2E7_0%,#F3ECDC_50%,#EFE6D4_100%)]" />
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[var(--candle)]/25 blur-3xl" />
-        <div className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[var(--lodge-blue)]/10 blur-3xl" />
+    <section className="relative overflow-hidden bg-[var(--lodge-blue)] pt-24 text-[var(--ivory)] sm:pt-28">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(200,162,74,0.18),transparent_50%),linear-gradient(180deg,#1E2A44_0%,#162033_55%,#121926_100%)]" />
         <svg
-          className="absolute inset-x-0 top-16 mx-auto h-[420px] w-full max-w-5xl opacity-[0.1]"
-          viewBox="0 0 800 400"
-          aria-hidden="true"
+          className="absolute inset-x-0 top-20 mx-auto h-[480px] w-full max-w-5xl opacity-[0.12]"
+          viewBox="0 0 800 420"
+          fill="none"
         >
-          <g fill="none" stroke="#C8A24A" strokeWidth="2.5">
-            <rect x="80" y="70" width="70" height="70" transform="rotate(12 115 105)" />
-            <circle cx="115" cy="105" r="20" />
-            <path d="M620 80 L690 160 L620 160 Z" />
-            <line x1="655" y1="60" x2="655" y2="180" />
+          <g stroke="#C8A24A" strokeWidth="1.5">
+            <rect x="90" y="80" width="120" height="120" />
+            <line x1="90" y1="140" x2="210" y2="140" />
+            <line x1="150" y1="80" x2="150" y2="200" />
+            <path d="M520 90 L640 210 L520 210 Z" />
+            <circle cx="580" cy="150" r="28" />
+            <path d="M680 280 L720 340 L640 340 Z" opacity="0.7" />
           </g>
         </svg>
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-8 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 lg:px-8 lg:pb-24 lg:pt-12">
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative flex justify-center lg:justify-start"
-          >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-1/2 h-[85%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(242,217,138,0.4)_0%,rgba(247,242,231,0)_70%)] blur-2xl lg:left-[36%]"
+      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-6 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10 lg:px-8 lg:pb-28 lg:pt-10">
+        <div className="max-w-xl">
+          <div className="flex justify-center lg:justify-start">
+            <BrandLogo
+              size="lg"
+              priority
+              className="relative z-10 h-28 w-28 sm:h-36 sm:w-36"
+              onDark
             />
-            <BrandLogo size="hero" priority className="relative z-10" />
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="mt-6 max-w-xl text-center font-[family-name:var(--font-display)] text-3xl text-[var(--lodge-blue)] sm:text-4xl lg:text-left"
-          >
-            {title}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mx-auto mt-5 max-w-lg text-center text-base leading-relaxed text-[var(--walnut)] sm:text-lg lg:mx-0 lg:text-left"
-          >
-            {subtitle}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
-          >
-            <Button href={buttonHref} size="lg">
-              {buttonText}
+          </div>
+
+          <p className="mt-6 text-center text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--gold)] lg:text-left">
+            the ASHLAR CRAFTSMAN
+          </p>
+
+          <h1 className="mt-3 text-center font-[family-name:var(--font-display)] text-4xl leading-[1.05] tracking-tight text-[var(--ivory)] sm:text-5xl md:text-6xl lg:text-left xl:text-7xl">
+            CRAFT YOUR CHARACTER.
+          </h1>
+
+          <p className="mx-auto mt-5 max-w-md text-center text-base leading-relaxed text-[var(--ivory)]/75 sm:text-lg lg:mx-0 lg:text-left">
+            Masonic-inspired apparel for Brothers who carry the Craft beyond the
+            Lodge.
+          </p>
+
+          <div className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
+            <Button href="/shop" size="lg" className="w-full sm:w-auto">
+              Explore the Craft
             </Button>
-            <Button href="/shop" variant="ghost" size="lg">
-              Shop Collections
+            <Button
+              href="/avatar"
+              variant="ghost"
+              size="lg"
+              className="w-full border-[var(--gold)]/45 bg-transparent text-[var(--ivory)] hover:bg-[var(--ivory)]/10 hover:text-[var(--ivory)] sm:w-auto"
+            >
+              Build Your Craftsman
             </Button>
-          </motion.div>
+          </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-            className="relative"
-          >
-            <div className="absolute inset-x-8 -bottom-4 h-16 rounded-[100%] bg-black/10 blur-2xl" />
-            <div className="grid grid-cols-3 items-end gap-2 sm:gap-4">
-              {heroAvatars.map((avatar, index) => (
-                <motion.div
-                  key={index}
-                  animate={{ y: [0, index === 1 ? -10 : -6, 0] }}
-                  transition={{
-                    duration: 4 + index,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className={index === 1 ? "z-10 -mb-2 scale-110" : "opacity-95"}
-                >
+        <div className="relative mx-auto w-full max-w-lg">
+          <div className="absolute inset-x-10 -bottom-2 h-14 rounded-[100%] bg-black/35 blur-2xl" />
+          <div className="grid grid-cols-3 items-end gap-2 sm:gap-3">
+            {heroAvatars.map((avatar, index) => (
+              <div
+                key={index}
+                className={
+                  index === 1
+                    ? "z-10 -mb-1 scale-110 motion-safe:animate-[float_5s_ease-in-out_infinite]"
+                    : "opacity-90"
+                }
+              >
+                <div className="rounded-[1.25rem] bg-[color-mix(in_srgb,var(--ivory)_92%,white)] p-1 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
                   <AvatarCanvas config={avatar} decorative />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-center text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--gold)]/80">
+            Look closer
+          </p>
         </div>
       </div>
     </section>

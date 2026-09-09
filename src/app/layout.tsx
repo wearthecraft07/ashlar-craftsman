@@ -27,14 +27,15 @@ export const metadata: Metadata = {
     template: "%s · the ASHLAR CRAFTSMAN",
   },
   description:
-    "Premium 2D cartoon streetwear and avatar studio. Luxury craftsmanship meets modern self-expression.",
+    "Masonic-inspired apparel for Brothers who carry the Craft beyond the Lodge. Build your Craftsman. Wear the mark.",
   icons: {
     icon: "/logo-mark.png",
     apple: "/logo-mark.png",
   },
   openGraph: {
     title: "the ASHLAR CRAFTSMAN",
-    description: "Craft Your Journey. Build your avatar. Wear the mark.",
+    description:
+      "Craft your character. Masonic-inspired apparel and Avatar Studio for Brothers of the Craft.",
     type: "website",
     locale: "en_US",
     images: [{ url: "/logo-mark.png", width: 1024, height: 1024 }],

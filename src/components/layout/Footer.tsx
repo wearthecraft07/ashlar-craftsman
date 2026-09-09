@@ -16,8 +16,9 @@ export function Footer() {
             <BrandLogo size="lg" className="h-24 w-24" onDark />
           </Link>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--ivory)]/70">
-            Traditional craftsmanship meets modern character. Build your avatar,
-            craft your journey, wear the mark.
+            Craft your character. Craft your journey. Wear the mark.
+            Masonic-inspired apparel for Brothers who carry the Craft beyond the
+            Lodge.
           </p>
         </div>
         <div>
@@ -26,18 +27,33 @@ export function Footer() {
           </p>
           <ul className="mt-4 space-y-2 text-sm text-[var(--ivory)]/75">
             <li>
+              <Link href="/shop" className="hover:text-[var(--gold)]">
+                Shop
+              </Link>
+            </li>
+            <li>
+              <Link href="/#collections" className="hover:text-[var(--gold)]">
+                Collections
+              </Link>
+            </li>
+            <li>
               <Link href="/avatar" className="hover:text-[var(--gold)]">
                 Avatar Studio
               </Link>
             </li>
             <li>
-              <Link href="/avatar/stickers" className="hover:text-[var(--gold)]">
-                Craft Your Stickers
+              <Link href="/#about" className="hover:text-[var(--gold)]">
+                About
               </Link>
             </li>
             <li>
-              <Link href="/shop" className="hover:text-[var(--gold)]">
-                Shop
+              <Link href="/lodge-edition" className="hover:text-[var(--gold)]">
+                Make It Your Lodge
+              </Link>
+            </li>
+            <li>
+              <Link href="/avatar/stickers" className="hover:text-[var(--gold)]">
+                Craft Your Stickers
               </Link>
             </li>
             <li>

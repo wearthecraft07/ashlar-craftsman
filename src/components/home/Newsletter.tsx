@@ -45,11 +45,11 @@ export function Newsletter() {
               Newsletter
             </p>
             <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--ivory)] sm:text-4xl">
-              Get drops, studio tips, and early access.
+              Continue the journey.
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--ivory)]/70 sm:text-base">
-              Join the craft list. No spam — just new collections and avatar
-              studio updates.
+              Occasional notes on new collections, Lodge Editions, and Avatar
+              Studio — nothing noisy.
             </p>
           </div>
           <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
