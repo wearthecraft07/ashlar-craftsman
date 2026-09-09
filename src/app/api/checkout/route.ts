@@ -18,8 +18,10 @@ const itemSchema = z.object({
     name: z.string(),
     hex: z.string(),
   }),
+  name: z.string().optional(),
   avatarConfig: z.record(z.string(), z.string()).optional(),
   custom: z.boolean().optional(),
+  stickerDesign: z.record(z.string(), z.unknown()).optional(),
 });
 
 const addressSchema = z.object({

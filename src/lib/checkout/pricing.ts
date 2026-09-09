@@ -13,6 +13,7 @@ export type CheckoutLineInput = {
   name?: string;
   avatarConfig?: Record<string, string>;
   custom?: boolean;
+  stickerDesign?: Record<string, unknown>;
 };
 
 export type PricedLine = {
@@ -26,6 +27,7 @@ export type PricedLine = {
   image: string;
   avatarConfig?: Record<string, string>;
   custom?: boolean;
+  stickerDesign?: Record<string, unknown>;
 };
 
 function staticProduct(id: string): Product | undefined {
@@ -86,7 +88,7 @@ export async function priceCheckoutLines(inputs: CheckoutLineInput[]) {
     const line: PricedLine = {
       productId: product.id,
       slug: product.slug,
-      name: product.name,
+      name: input.name?.trim() || product.name,
       price: product.price,
       quantity: input.quantity,
       size: input.size,
@@ -94,6 +96,7 @@ export async function priceCheckoutLines(inputs: CheckoutLineInput[]) {
       image: product.images[0] ?? "/shirt-mark.png",
       avatarConfig: input.avatarConfig,
       custom: input.custom,
+      stickerDesign: input.stickerDesign,
     };
     lines.push(line);
     subtotal += line.price * line.quantity;

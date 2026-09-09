@@ -108,6 +108,9 @@ export default async function OrdersPage() {
                   {item.color?.name ? ` · ${item.color.name}` : ""}
                   {item.size ? ` / ${item.size}` : ""}
                   {item.avatarConfig ? " · custom avatar" : ""}
+                  {"stickerDesign" in item && item.stickerDesign
+                    ? " · sticker shirt"
+                    : ""}
                 </li>
               ))}
             </ul>

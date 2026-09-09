@@ -73,6 +73,23 @@ export type CartItem = {
   image: string;
   avatarConfig?: AvatarConfig;
   custom?: boolean;
+  /** Locked sticker→shirt design snapshot (does not change if avatar is edited later). */
+  stickerDesign?: StickerShirtDesign;
+};
+
+/** Print-ready shirt design derived from a sticker composition. */
+export type StickerShirtDesign = {
+  stickerId: string;
+  stickerName: string;
+  composition: Record<string, unknown>;
+  /** Locked avatar snapshot at design time. */
+  avatarConfig: AvatarConfig;
+  apparelStyle: string;
+  placement: "center-chest" | "left-chest" | "upper-back" | "full-back";
+  designSize: "small" | "medium" | "large";
+  lockedAt: string;
+  /** Optional preview thumbnail (data URL) for cart UI. */
+  previewDataUrl?: string;
 };
 
 export type OrderStatus =

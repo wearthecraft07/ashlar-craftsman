@@ -42,14 +42,27 @@ export function CartView() {
             className="flex flex-col gap-4 rounded-[1.5rem] border border-black/8 bg-white p-4 sm:flex-row sm:items-center"
           >
             <div
-              className="h-24 w-24 shrink-0 rounded-2xl"
+              className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl"
               style={{ backgroundColor: item.color.hex }}
-            />
+            >
+              {item.stickerDesign?.previewDataUrl || item.image?.startsWith("data:") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.stickerDesign?.previewDataUrl || item.image}
+                  alt=""
+                  className="absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] object-contain"
+                />
+              ) : null}
+            </div>
             <div className="flex-1">
               <p className="font-semibold">{item.name}</p>
               <p className="mt-1 text-sm text-[var(--muted)]">
                 {item.color.name} · Size {item.size}
-                {item.custom ? " · Custom avatar" : ""}
+                {item.stickerDesign
+                  ? ` · ${item.stickerDesign.placement.replace("-", " ")} · sticker shirt`
+                  : item.custom
+                    ? " · Custom avatar"
+                    : ""}
               </p>
               <p className="mt-2 font-medium">{formatCurrency(item.price)}</p>
             </div>

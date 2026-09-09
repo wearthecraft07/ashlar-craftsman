@@ -59,11 +59,24 @@ export function CheckoutForm({
           items: items.map((item) => ({
             productId: item.productId || item.slug,
             slug: item.slug,
+            name: item.name,
             quantity: item.quantity,
             size: item.size,
             color: item.color,
             avatarConfig: item.avatarConfig,
             custom: item.custom,
+            stickerDesign: item.stickerDesign
+              ? {
+                  stickerId: item.stickerDesign.stickerId,
+                  stickerName: item.stickerDesign.stickerName,
+                  composition: item.stickerDesign.composition,
+                  avatarConfig: item.stickerDesign.avatarConfig,
+                  apparelStyle: item.stickerDesign.apparelStyle,
+                  placement: item.stickerDesign.placement,
+                  designSize: item.stickerDesign.designSize,
+                  lockedAt: item.stickerDesign.lockedAt,
+                }
+              : undefined,
           })),
         }),
       });

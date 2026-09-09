@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Download, Heart, Share2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Download, Heart, Share2, Shirt, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { StickerRenderer } from "@/components/stickers/StickerRenderer";
 import { exportStickerFromStage } from "@/lib/stickers/export";
 import { STICKER_CATEGORIES } from "@/lib/stickers/catalog";
+import { renderPreviewArtworkFromStage } from "@/lib/stickers/print-artwork";
+import { saveShirtDesignDraft } from "@/lib/stickers/shirt-draft";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig } from "@/types";
 import type { StickerDefinition } from "@/types/stickers";
@@ -25,6 +28,7 @@ export function StickerPreview({
   onClose,
   onToggleFavorite,
 }: Props) {
+  const router = useRouter();
   const stageRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -75,6 +79,36 @@ export function StickerPreview({
     }
   }
 
+  async function putOnShirt() {
+    if (!stageRef.current) return;
+    setBusy(true);
+    setStatus("Preparing your shirt design…");
+    try {
+      let previewDataUrl: string | undefined;
+      try {
+        previewDataUrl = await renderPreviewArtworkFromStage(
+          stageRef.current,
+          sticker,
+        );
+      } catch {
+        previewDataUrl = undefined;
+      }
+
+      saveShirtDesignDraft({
+        stickerId: sticker.id,
+        stickerName: sticker.name,
+        composition: sticker.composition,
+        avatarConfig: config,
+        previewDataUrl,
+        createdAt: new Date().toISOString(),
+      });
+      router.push("/avatar/stickers/shirt");
+    } catch {
+      setStatus("Could not open shirt customizer.");
+      setBusy(false);
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--lodge-blue)]/60 p-0 sm:items-center sm:p-6"
@@ -116,41 +150,48 @@ export function StickerPreview({
             />
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <Button
-              onClick={() => save("png")}
-              disabled={busy}
-              className="w-full"
-            >
-              <Download className="h-4 w-4" />
-              Save Sticker
+          <div className="mt-5 grid gap-3">
+            <Button onClick={putOnShirt} disabled={busy} className="w-full">
+              <Shirt className="h-4 w-4" />
+              Put this on a shirt
             </Button>
-            <Button
-              variant={favorited ? "dark" : "white"}
-              onClick={onToggleFavorite}
-              className="w-full"
-            >
-              <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
-              {favorited ? "Favorited" : "Favorite"}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => save("svg")}
-              disabled={busy}
-              className="w-full"
-            >
-              <Download className="h-4 w-4" />
-              Save SVG
-            </Button>
-            <Button
-              variant="white"
-              onClick={share}
-              disabled={busy}
-              className="w-full"
-            >
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button
+                variant="dark"
+                onClick={() => save("png")}
+                disabled={busy}
+                className="w-full"
+              >
+                <Download className="h-4 w-4" />
+                Save Sticker
+              </Button>
+              <Button
+                variant={favorited ? "dark" : "white"}
+                onClick={onToggleFavorite}
+                className="w-full"
+              >
+                <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
+                {favorited ? "Favorited" : "Favorite"}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => save("svg")}
+                disabled={busy}
+                className="w-full"
+              >
+                <Download className="h-4 w-4" />
+                Save SVG
+              </Button>
+              <Button
+                variant="white"
+                onClick={share}
+                disabled={busy}
+                className="w-full"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+            </div>
           </div>
 
           {status ? (
@@ -159,7 +200,7 @@ export function StickerPreview({
             </p>
           ) : (
             <p className="mt-4 text-center text-xs text-[var(--walnut)]/80">
-              Transparent PNG with sticker outline — ready for texts and lodge chats.
+              Save for chats — or put your character on an Ashlar Craftsman shirt.
             </p>
           )}
         </div>

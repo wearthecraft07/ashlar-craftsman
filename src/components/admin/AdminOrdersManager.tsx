@@ -202,6 +202,7 @@ export function AdminOrdersManager() {
                         size?: string;
                         color?: { name?: string };
                         avatarConfig?: unknown;
+                        stickerDesign?: unknown;
                       };
                       return (
                         <li
@@ -211,6 +212,7 @@ export function AdminOrdersManager() {
                           {line.name} × {line.quantity} · {line.color?.name} /{" "}
                           {line.size}
                           {line.avatarConfig ? " · custom avatar" : ""}
+                          {line.stickerDesign ? " · sticker shirt" : ""}
                         </li>
                       );
                     },

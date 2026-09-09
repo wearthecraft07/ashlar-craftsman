@@ -19,7 +19,8 @@ function sameCustom(a: CartItem, b: Omit<CartItem, "id">) {
     a.productId === b.productId &&
     a.size === b.size &&
     a.color.id === b.color.id &&
-    JSON.stringify(a.avatarConfig) === JSON.stringify(b.avatarConfig)
+    JSON.stringify(a.avatarConfig) === JSON.stringify(b.avatarConfig) &&
+    JSON.stringify(a.stickerDesign) === JSON.stringify(b.stickerDesign)
   );
 }
 

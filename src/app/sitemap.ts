@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/shop",
     "/avatar",
     "/avatar/stickers",
+    "/avatar/stickers/shirt",
     "/cart",
     "/checkout",
   ].map((path) => ({
