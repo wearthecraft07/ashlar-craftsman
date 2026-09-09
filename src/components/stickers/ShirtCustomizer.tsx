@@ -20,7 +20,6 @@ import {
   type DesignSizeId,
 } from "@/lib/stickers/apparel";
 import { getStickerById } from "@/lib/stickers/catalog";
-import { renderPreviewArtworkFromStage } from "@/lib/stickers/print-artwork";
 import {
   clearShirtDesignDraft,
   loadShirtDesignDraft,
@@ -96,6 +95,9 @@ export function ShirtCustomizer() {
     setBusy(true);
     setStatus("Finalizing your shirt design…");
     try {
+      const { renderPreviewArtworkFromStage } = await import(
+        "@/lib/stickers/print-artwork"
+      );
       const art = await renderPreviewArtworkFromStage(
         stageRef.current,
         sticker,

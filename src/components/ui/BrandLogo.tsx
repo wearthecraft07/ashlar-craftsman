@@ -24,11 +24,12 @@ export function BrandLogo({
 }: Props) {
   return (
     <Image
-      src="/logo-mark.png"
+      src="/logo-mark-sm.png"
       alt="the ASHLAR CRAFTSMAN"
-      width={1024}
-      height={1024}
+      width={256}
+      height={256}
       priority={priority}
+      sizes="(max-width: 768px) 96px, 160px"
       className={cn(
         "object-contain",
         onDark

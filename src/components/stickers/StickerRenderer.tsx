@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { memo, useId } from "react";
 import { AvatarCanvas } from "@/avatar/AvatarCanvas";
 import { composeAvatarConfig } from "@/lib/stickers/compose";
 import { StickerProp } from "@/lib/stickers/props";
@@ -19,6 +19,8 @@ type Props = {
   stageRef?: React.RefObject<HTMLDivElement | null>;
   /** Preview outline via CSS drop-shadow (export uses true silhouette). */
   showOutline?: boolean;
+  /** grid = lightweight; preview/print keep full fidelity. */
+  quality?: "grid" | "preview" | "print";
 };
 
 /**
@@ -26,18 +28,20 @@ type Props = {
  * background → environment props → avatar (existing AvatarCanvas) →
  * foreground props → text → outline (preview).
  */
-export function StickerRenderer({
+export const StickerRenderer = memo(function StickerRenderer({
   sticker,
   config,
   className,
   stageRef,
   showOutline = true,
+  quality = "preview",
 }: Props) {
   const uid = useId().replace(/:/g, "");
   const composition = sticker.composition;
   const merged = composeAvatarConfig(config, composition);
   const background = composition.background ?? "transparent";
   const props = composition.props ?? [];
+  const isGrid = quality === "grid";
 
   const environmentProps = props.filter((p) =>
     ["columns", "lodgeBuilding", "sun", "moon", "spark"].includes(p),
@@ -50,9 +54,10 @@ export function StickerRenderer({
     <div
       ref={stageRef}
       data-sticker-stage={sticker.id}
+      data-sticker-quality={quality}
       className={cn(
         "relative aspect-square w-full",
-        showOutline && "sticker-outline-preview",
+        showOutline && !isGrid && "sticker-outline-preview",
         className,
       )}
     >
@@ -99,7 +104,7 @@ export function StickerRenderer({
       ) : null}
     </div>
   );
-}
+});
 
 function StickerTextBanner({
   text,

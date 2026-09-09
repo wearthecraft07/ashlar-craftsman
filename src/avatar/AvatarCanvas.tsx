@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { memo, useId } from "react";
 import type { AvatarConfig } from "@/types";
 import { getTone } from "@/avatar/options";
 
@@ -16,13 +16,16 @@ const LINE = "#1A120C";
 const GOLD = "#C9A227";
 const SW = 4; // bold 3–5px outlines
 
-/** Absolute mark URLs so downloaded SVGs still resolve logos. */
-function markSrc(path: `/${string}`) {
+/** Prefer compact marks for on-screen SVG; full marks kept for rare print paths. */
+function markSrc(path: `/${string}`, compact = true) {
+  const file = compact
+    ? (path.replace(/\.png$/, "-sm.png") as `/${string}`)
+    : path;
   const base = (
     process.env.NEXT_PUBLIC_SITE_URL ||
     (typeof window !== "undefined" ? window.location.origin : "")
   ).replace(/\/$/, "");
-  return base ? `${base}${path}` : path;
+  return base ? `${base}${file}` : file;
 }
 
 function poseTransform(pose: string) {
@@ -117,7 +120,7 @@ function armLayout(pose: string): ArmLayout {
   }
 }
 
-export function AvatarCanvas({
+export const AvatarCanvas = memo(function AvatarCanvas({
   config,
   className,
   decorative,
@@ -573,7 +576,7 @@ export function AvatarCanvas({
       </g>
     </svg>
   );
-}
+});
 
 function FormalClothing({
   type,

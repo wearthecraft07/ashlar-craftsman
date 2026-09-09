@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import { StickerRenderer } from "@/components/stickers/StickerRenderer";
 import { exportStickerFromStage } from "@/lib/stickers/export";
 import { STICKER_CATEGORIES } from "@/lib/stickers/catalog";
-import { renderPreviewArtworkFromStage } from "@/lib/stickers/print-artwork";
 import { saveShirtDesignDraft } from "@/lib/stickers/shirt-draft";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig } from "@/types";
@@ -86,6 +85,9 @@ export function StickerPreview({
     try {
       let previewDataUrl: string | undefined;
       try {
+        const { renderPreviewArtworkFromStage } = await import(
+          "@/lib/stickers/print-artwork"
+        );
         previewDataUrl = await renderPreviewArtworkFromStage(
           stageRef.current,
           sticker,
@@ -147,6 +149,7 @@ export function StickerPreview({
               config={config}
               stageRef={stageRef}
               showOutline
+              quality="preview"
             />
           </div>
 

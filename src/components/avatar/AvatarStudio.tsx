@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronUp,
@@ -374,12 +373,15 @@ export function AvatarStudio({
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(200,162,74,0.18),transparent_60%)]"
               />
-              <motion.div
-                style={{ scale: zoom, rotate: rotation }}
-                className="relative z-10 w-[88%]"
+              <div
+                style={{
+                  transform: `scale(${zoom}) rotate(${rotation}deg)`,
+                  transition: "transform 160ms ease-out",
+                }}
+                className="relative z-10 w-[88%] will-change-transform"
               >
                 <AvatarCanvas config={config} />
-              </motion.div>
+              </div>
             </div>
 
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
