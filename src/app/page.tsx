@@ -13,6 +13,8 @@ import { MilestonesTeaser } from "@/components/home/MilestonesTeaser";
 import { Newsletter } from "@/components/home/Newsletter";
 import { Philosophy } from "@/components/home/Philosophy";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Craft Your Character",
   description:
