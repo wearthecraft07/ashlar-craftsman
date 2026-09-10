@@ -41,7 +41,8 @@ const SIZE_MAP: Record<
 
 /**
  * Consistent premium mock presentation for all product surfaces.
- * Real photography should replace this via Product.images — not ad-hoc SVGs.
+ * Real photography / product artwork should replace the default mark
+ * via Product.images — not ad-hoc SVGs.
  */
 export function ProductVisual({
   product,
@@ -57,9 +58,24 @@ export function ProductVisual({
     fill.toLowerCase() === "#ffffff" ||
     fill.toLowerCase() === "#d6d1c7";
   const stroke = light ? "#1E2A44" : "#F7F2E7";
-  const mark = detail
+  const artwork = product.images?.find((src) =>
+    /\.(jpe?g|png|webp|avif)$/i.test(src),
+  );
+  const markSrc = artwork ?? "/shirt-mark-sm.png";
+  const customPrint = Boolean(artwork);
+  const baseMark = detail
     ? { x: 50, y: 70, w: 100, h: 100 }
     : SIZE_MAP[size].mark;
+  // Full chest print for product-specific artwork
+  const mark = customPrint
+    ? detail
+      ? { x: 40, y: 62, w: 120, h: 120 }
+      : size === "sm"
+        ? { x: 58, y: 78, w: 84, h: 84 }
+        : size === "md"
+          ? { x: 52, y: 72, w: 96, h: 96 }
+          : { x: 44, y: 66, w: 112, h: 112 }
+    : baseMark;
   const label = `${product.name}${color ? ` in ${color.name}` : ""}`;
 
   return (
@@ -102,13 +118,13 @@ export function ProductVisual({
           opacity="0.18"
         />
         <image
-          href="/shirt-mark-sm.png"
+          href={markSrc}
           x={mark.x}
           y={mark.y}
           width={mark.w}
           height={mark.h}
           preserveAspectRatio="xMidYMid meet"
-          opacity={detail ? 1 : 0.95}
+          opacity={detail ? 1 : 0.98}
         />
       </svg>
     </div>
