@@ -3,6 +3,51 @@ import { mapDbProduct, type DbProduct } from "@/lib/catalog/map-product";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Product } from "@/types";
 
+const RASTER = /\.(jpe?g|png|webp|avif)$/i;
+
+function isPlaceholderImage(src: string) {
+  return (
+    src.includes("shirt-mark") ||
+    src.endsWith(".svg") ||
+    src.trim() === ""
+  );
+}
+
+/**
+ * Prefer curated static artwork when the DB still has placeholder/SVG images.
+ * Real admin-uploaded raster photos keep priority.
+ */
+export function enrichProductFromStatic(product: Product): Product {
+  const staticProduct = PRODUCTS.find(
+    (p) => p.slug === product.slug || p.id === product.id,
+  );
+  if (!staticProduct) return product;
+
+  const staticArt = staticProduct.images.find((src) => RASTER.test(src));
+  const dbHasRealArt = product.images.some(
+    (src) => RASTER.test(src) && !isPlaceholderImage(src),
+  );
+
+  let images = product.images;
+  if (staticArt && !dbHasRealArt) {
+    images = [
+      staticArt,
+      ...product.images.filter((src) => src !== staticArt && !isPlaceholderImage(src)),
+    ];
+  }
+
+  const description =
+    product.description === staticProduct.description
+      ? product.description
+      : // Keep admin edits unless this is still the original seed copy
+        product.description.includes("embroidered gold mark") &&
+          staticProduct.slug === "ashlar-mark-tee"
+        ? staticProduct.description
+        : product.description;
+
+  return { ...product, images, description };
+}
+
 function staticProducts(includeUnpublished = false): Product[] {
   return PRODUCTS.map((product) => ({
     ...product,
@@ -53,7 +98,9 @@ export async function listProducts(options?: {
   }
 
   return {
-    products: (data as DbProduct[]).map(mapDbProduct),
+    products: (data as DbProduct[]).map((row) =>
+      enrichProductFromStatic(mapDbProduct(row)),
+    ),
     source: "database",
   };
 }
@@ -71,7 +118,7 @@ export async function getProductBySlug(
       .maybeSingle();
 
     if (data) {
-      const product = mapDbProduct(data as DbProduct);
+      const product = enrichProductFromStatic(mapDbProduct(data as DbProduct));
       if (product.status !== "published") {
         return { product: null, source: "database" };
       }
