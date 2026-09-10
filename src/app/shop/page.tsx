@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { ShopCatalog } from "@/components/shop/ShopCatalog";
 import { listProducts } from "@/lib/catalog/products";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Shop",
   description:

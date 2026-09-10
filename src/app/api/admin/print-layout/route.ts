@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -155,6 +156,12 @@ export async function PUT(request: Request) {
     }
 
     const product = mapDbProduct(data as DbProduct);
+
+    // Product pages are statically generated — bust cache so storefront updates.
+    revalidatePath("/shop");
+    revalidatePath(`/shop/${product.slug}`);
+    revalidatePath("/");
+
     return NextResponse.json({
       product,
       layout: product.printLayout ?? parsePrintLayout(stored) ?? DEFAULT_PRINT_LAYOUT,

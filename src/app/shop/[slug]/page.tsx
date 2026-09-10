@@ -6,6 +6,9 @@ import { getProductStory } from "@/data/product-stories";
 import { getProductBySlug, listProducts } from "@/lib/catalog/products";
 import { getRelatedProducts } from "@/lib/products/related";
 
+/** Refresh after admin print-layout / catalog edits (also revalidated on save). */
+export const revalidate = 60;
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

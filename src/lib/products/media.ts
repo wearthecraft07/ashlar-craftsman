@@ -43,8 +43,12 @@ function isUsablePhoto(src: string | undefined): src is string {
   if (!src) return false;
   if (src.includes("shirt-mark")) return false;
   if (!PHOTO_EXT.test(src)) return false;
+  // Admin print-editor uploads — never treat as gallery photography
+  if (src.includes("/print-designs/") || src.includes("print-designs%2F")) {
+    return false;
+  }
   // Curated print artwork at /products/filename.ext → mock print, not photo slot
-  if (/^\/products\/[^/]+\.(jpe?g|png|webp|avif)$/i.test(src)) return false;
+  if (/\/products\/[^/]+\.(jpe?g|png|webp|avif)(\?|$)/i.test(src)) return false;
   return true;
 }
 
@@ -66,9 +70,14 @@ export function getProductPrintArt(product: Product): string | null {
  */
 export function resolveProductMedia(product: Product): ProductMediaSlot[] {
   const images = product.images ?? [];
-  const frontPhoto = isUsablePhoto(images[0]) ? images[0] : null;
+  const hasPrintLayout = Boolean(product.printLayout?.designUrl);
+  // When an admin print layout exists, always compose on the tee mock —
+  // never let a flat image (or print PNG) replace the storefront placement.
+  const frontPhoto =
+    !hasPrintLayout && isUsablePhoto(images[0]) ? images[0] : null;
   const backPhoto = isUsablePhoto(images[1]) ? images[1] : null;
-  const detailPhoto = isUsablePhoto(images[2]) ? images[2] : null;
+  const detailPhoto =
+    !hasPrintLayout && isUsablePhoto(images[2]) ? images[2] : null;
   const wornPhoto = isUsablePhoto(images[3]) ? images[3] : null;
 
   const slots: ProductMediaSlot[] = [

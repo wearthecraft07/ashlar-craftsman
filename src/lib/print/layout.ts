@@ -127,8 +127,16 @@ export function resetPlacement(layout: PrintLayout): PrintLayout {
 }
 
 export function parsePrintLayout(raw: unknown): PrintLayout | null {
-  if (!raw || typeof raw !== "object") return null;
-  const o = raw as Record<string, unknown>;
+  let value: unknown = raw;
+  if (typeof value === "string") {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+  if (!value || typeof value !== "object") return null;
+  const o = value as Record<string, unknown>;
   const designUrl =
     typeof o.designUrl === "string" && o.designUrl.trim()
       ? o.designUrl.trim()
