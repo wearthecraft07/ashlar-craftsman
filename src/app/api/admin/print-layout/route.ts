@@ -80,17 +80,22 @@ export async function GET(request: Request) {
     .maybeSingle();
 
   if (error) {
-    if (error.message.toLowerCase().includes("print_layout")) {
+    const raw = error.message || "Load failed";
+    const missingColumn =
+      /print_layout/i.test(raw) &&
+      /(schema cache|does not exist|could not find)/i.test(raw);
+    if (missingColumn) {
       return NextResponse.json(
         {
           error:
-            "print_layout column missing. Run supabase/proposed-product-print-layout.sql in Supabase.",
+            "print_layout is missing from the API schema cache. In Supabase SQL Editor run: NOTIFY pgrst, 'reload schema';",
           code: "pending_schema",
+          details: raw,
         },
         { status: 503 },
       );
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: raw }, { status: 500 });
   }
 
   if (!data) {
@@ -142,17 +147,22 @@ export async function PUT(request: Request) {
       .single();
 
     if (error) {
-      if (error.message.toLowerCase().includes("print_layout")) {
+      const raw = error.message || "Update failed";
+      const missingColumn =
+        /print_layout/i.test(raw) &&
+        /(schema cache|does not exist|could not find)/i.test(raw);
+      if (missingColumn) {
         return NextResponse.json(
           {
             error:
-              "print_layout column missing. Run supabase/proposed-product-print-layout.sql in Supabase.",
+              "print_layout is missing from the API schema cache. In Supabase SQL Editor run: NOTIFY pgrst, 'reload schema'; then retry Save. If that fails, run: alter table public.products add column if not exists print_layout jsonb;",
             code: "pending_schema",
+            details: raw,
           },
           { status: 503 },
         );
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: raw }, { status: 500 });
     }
 
     const product = mapDbProduct(data as DbProduct);
