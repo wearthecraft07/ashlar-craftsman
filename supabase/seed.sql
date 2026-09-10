@@ -26,11 +26,11 @@ insert into public.products (
 values
   (
     'ashlar-mark-tee', 'Ashlar Mark Tee',
-    'Heavyweight cotton featuring the Rough Ashlar under the Square and Compasses — the work of refining character, worn.',
+    'Heavyweight cotton with an embroidered gold mark. Clean silhouette, street-ready finish.',
     5800, 4800, 'AC-MARK-TEE', 'essentials',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"gold","name":"Gold Mist","hex":"#C9A227"}]'::jsonb,
     array['XS','S','M','L','XL','XXL'],
-    array['/products/ashlar-mark.jpg'],
+    array['/shirt-mark.png'],
     array['cotton','gold','everyday'],
     true, true, 120, 10, 'published'
   ),

@@ -36,16 +36,7 @@ export function enrichProductFromStatic(product: Product): Product {
     ];
   }
 
-  const description =
-    product.description === staticProduct.description
-      ? product.description
-      : // Keep admin edits unless this is still the original seed copy
-        product.description.includes("embroidered gold mark") &&
-          staticProduct.slug === "ashlar-mark-tee"
-        ? staticProduct.description
-        : product.description;
-
-  return { ...product, images, description };
+  return { ...product, images };
 }
 
 function staticProducts(includeUnpublished = false): Product[] {
