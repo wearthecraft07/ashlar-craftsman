@@ -34,11 +34,27 @@ const VIEW_LABELS: Record<ProductMediaView, string> = {
 
 const PHOTO_EXT = /\.(jpe?g|png|webp|avif)$/i;
 
+/**
+ * True product photography only.
+ * Flat print files like `/products/ashlar-mark.jpg` are shirt artwork for ProductVisual,
+ * not gallery photography. Real photos live under `/products/{slug}/front.jpg` etc.
+ */
 function isUsablePhoto(src: string | undefined): src is string {
   if (!src) return false;
   if (src.includes("shirt-mark")) return false;
-  if (src.includes("/products/") && src.endsWith(".svg")) return false;
-  return PHOTO_EXT.test(src);
+  if (!PHOTO_EXT.test(src)) return false;
+  // Curated print artwork at /products/filename.ext → mock print, not photo slot
+  if (/^\/products\/[^/]+\.(jpe?g|png|webp|avif)$/i.test(src)) return false;
+  return true;
+}
+
+/** Raster print art used on the shirt mock (not photography). */
+export function getProductPrintArt(product: Product): string | null {
+  const images = product.images ?? [];
+  return (
+    images.find((src) => /^\/products\/[^/]+\.(jpe?g|png|webp|avif)$/i.test(src)) ??
+    null
+  );
 }
 
 /**

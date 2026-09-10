@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { getProductPrintArt } from "@/lib/products/media";
 import type { Product, ProductColor } from "@/types";
 
 type Size = "sm" | "md" | "lg" | "hero";
@@ -39,10 +40,20 @@ const SIZE_MAP: Record<
   },
 };
 
+/** Chest print placement tuned to the tee body (below collar, inside side seams). */
+const PRINT_MAP: Record<
+  Size,
+  { x: number; y: number; w: number; h: number }
+> = {
+  sm: { x: 66, y: 102, w: 68, h: 68 },
+  md: { x: 62, y: 100, w: 76, h: 76 },
+  lg: { x: 58, y: 98, w: 84, h: 84 },
+  hero: { x: 54, y: 96, w: 92, h: 92 },
+};
+
 /**
  * Consistent premium mock presentation for all product surfaces.
- * Real photography / product artwork should replace the default mark
- * via Product.images — not ad-hoc SVGs.
+ * Product print artwork is placed on the tee template; photography uses ProductPhoto.
  */
 export function ProductVisual({
   product,
@@ -58,24 +69,19 @@ export function ProductVisual({
     fill.toLowerCase() === "#ffffff" ||
     fill.toLowerCase() === "#d6d1c7";
   const stroke = light ? "#1E2A44" : "#F7F2E7";
-  const artwork = product.images?.find((src) =>
-    /\.(jpe?g|png|webp|avif)$/i.test(src),
-  );
-  const markSrc = artwork ?? "/shirt-mark-sm.png";
-  const customPrint = Boolean(artwork);
-  const baseMark = detail
-    ? { x: 50, y: 70, w: 100, h: 100 }
-    : SIZE_MAP[size].mark;
-  // Full chest print for product-specific artwork
+  const printArt = getProductPrintArt(product);
+  const markSrc = printArt ?? "/shirt-mark-sm.png";
+  const customPrint = Boolean(printArt);
+  const clipId = `shirt-body-${product.slug}-${size}-${detail ? "d" : "n"}`;
+
   const mark = customPrint
     ? detail
-      ? { x: 40, y: 62, w: 120, h: 120 }
-      : size === "sm"
-        ? { x: 58, y: 78, w: 84, h: 84 }
-        : size === "md"
-          ? { x: 52, y: 72, w: 96, h: 96 }
-          : { x: 44, y: 66, w: 112, h: 112 }
-    : baseMark;
+      ? { x: 48, y: 88, w: 104, h: 104 }
+      : PRINT_MAP[size]
+    : detail
+      ? { x: 50, y: 70, w: 100, h: 100 }
+      : SIZE_MAP[size].mark;
+
   const label = `${product.name}${color ? ` in ${color.name}` : ""}`;
 
   return (
@@ -93,6 +99,13 @@ export function ProductVisual({
         aria-hidden={decorative || undefined}
         aria-label={decorative ? undefined : label}
       >
+        <defs>
+          {/* Keep print inside the tee body */}
+          <clipPath id={clipId}>
+            <path d="M60 96 L140 96 L140 190 L60 190 Z" />
+          </clipPath>
+        </defs>
+
         {/* Soft ground shadow */}
         <ellipse
           cx="100"
@@ -124,6 +137,7 @@ export function ProductVisual({
           width={mark.w}
           height={mark.h}
           preserveAspectRatio="xMidYMid meet"
+          clipPath={customPrint ? `url(#${clipId})` : undefined}
           opacity={detail ? 1 : 0.98}
         />
       </svg>
