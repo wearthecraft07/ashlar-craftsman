@@ -16,7 +16,7 @@ export function DiscoveryProgress({ found, feedback }: Props) {
     >
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
-          Craft discovered
+          Tools discovered
         </p>
         <p className="mt-1 font-[family-name:var(--font-display)] text-2xl text-[var(--ivory)]">
           {found}{" "}

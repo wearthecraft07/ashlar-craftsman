@@ -29,8 +29,8 @@ export function ProductLookCloser({ symbols }: Props) {
         Look closer.
       </h2>
       <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--walnut)]">
-        Public marks of the Craft — architecture, tools, and philosophy. Nothing
-        private. Everything intentional.
+        Working tools of the Craft — measure, refine, and build character.
+        Nothing private. Everything intentional.
       </p>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">

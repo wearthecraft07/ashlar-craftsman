@@ -17,7 +17,8 @@ export function DiscoveryDetail({ item, onDismiss }: Props) {
         aria-live="polite"
       >
         <p className="text-sm leading-relaxed text-[var(--ivory)]/70">
-          Inspect the plate. Marks reveal themselves to those who look closer.
+          Inspect the plate. Working tools reveal themselves to those who look
+          closer.
         </p>
       </div>
     );

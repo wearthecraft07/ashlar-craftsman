@@ -22,7 +22,7 @@ export function DiscoveryHotspot({
       aria-label={
         discovered
           ? `Discovered: ${item.title}. Activate to review.`
-          : `Look closer: possible mark near ${item.label}`
+          : `Look closer: possible tool near ${item.label}`
       }
       aria-pressed={active}
       aria-describedby="discovery-progress"

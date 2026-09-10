@@ -94,8 +94,9 @@ export function DiscoveryExperience({ products }: Props) {
                 </Button>
               </div>
               <p className="mt-6 max-w-sm text-sm text-[var(--walnut)]/75">
-                Public symbols of the Craft — architecture, tools, and
-                philosophy. Nothing private. Everything intentional.
+                Working tools of the Craft — measure, refine, stand upright, act
+                fairly, meet as equals, and unite. Nothing private. Everything
+                intentional.
               </p>
 
               <div className="mt-10 hidden lg:block">
@@ -140,7 +141,7 @@ export function DiscoveryExperience({ products }: Props) {
                     <li key={`sr-${item.id}`}>
                       {discovered.has(item.id)
                         ? `Found: ${item.title}. ${item.description}`
-                        : `Undiscovered mark: ${item.label}`}
+                        : `Undiscovered tool: ${item.label}`}
                     </li>
                   ))}
                 </ul>

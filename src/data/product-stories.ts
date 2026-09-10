@@ -91,7 +91,7 @@ export const PRODUCT_STORIES: ProductStory[] = [
       { label: "Finish", value: "Embroidered gold mark · clean silhouette" },
     ],
     showBrotherTestLink: true,
-    relatedDiscoveryIds: ["ashlar"],
+    relatedDiscoveryIds: ["gavel"],
   },
   {
     productId: "prod_journey",
@@ -127,7 +127,7 @@ export const PRODUCT_STORIES: ProductStory[] = [
       { label: "Intent", value: "Built for movement and lasting wear" },
     ],
     showBrotherTestLink: true,
-    relatedDiscoveryIds: ["compasses", "celestial"],
+    relatedDiscoveryIds: ["gauge", "trowel"],
   },
   {
     productId: "prod_mason_line",
@@ -239,7 +239,7 @@ export const PRODUCT_STORIES: ProductStory[] = [
       { label: "Detail", value: "Gold ink accents" },
     ],
     showBrotherTestLink: true,
-    relatedDiscoveryIds: ["pillars"],
+    relatedDiscoveryIds: ["level", "plumb"],
   },
   {
     productId: "prod_level",
@@ -313,7 +313,7 @@ export const PRODUCT_STORIES: ProductStory[] = [
       { label: "Detail", value: "Gold edge detailing · tonal craftsmanship badge" },
     ],
     showBrotherTestLink: false,
-    relatedDiscoveryIds: ["compasses", "keystone"],
+    relatedDiscoveryIds: ["square", "gauge"],
   },
   {
     productId: "prod_stonework",
@@ -353,7 +353,7 @@ export const PRODUCT_STORIES: ProductStory[] = [
       { label: "Print", value: "Textured print inspired by cut ashlar" },
     ],
     showBrotherTestLink: true,
-    relatedDiscoveryIds: ["ashlar", "keystone"],
+    relatedDiscoveryIds: ["gavel", "trowel"],
   },
 ];
 

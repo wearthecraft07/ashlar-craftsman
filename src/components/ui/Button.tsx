@@ -12,7 +12,7 @@ const variants: Record<Variant, string> = {
     "bg-[var(--gold)] text-[var(--lodge-blue)] hover:bg-[var(--copper)] hover:text-[var(--ivory)] shadow-[0_10px_28px_rgba(200,162,74,0.28)]",
   ghost:
     "bg-[var(--ivory)] text-[var(--walnut)] border border-[var(--gold)] hover:bg-[color-mix(in_srgb,var(--candle)_35%,var(--ivory))] hover:text-[var(--lodge-blue)]",
-  dark: "bg-[var(--lodge-blue)] text-[#FFFFFF] hover:bg-[color-mix(in_srgb,var(--lodge-blue)_85%,black)] hover:text-[#FFFFFF]",
+  dark: "bg-[var(--lodge-blue)] !text-[#FFFFFF] hover:bg-[color-mix(in_srgb,var(--lodge-blue)_85%,black)] hover:!text-[#FFFFFF]",
   white:
     "bg-[var(--panel)] text-[var(--charcoal)] border border-[var(--stone)] hover:border-[var(--gold)]",
 };

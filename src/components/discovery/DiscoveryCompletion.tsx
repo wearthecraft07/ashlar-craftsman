@@ -16,7 +16,7 @@ export function DiscoveryCompletion({ onExploreAgain, children }: Props) {
           Complete
         </p>
         <h3 className="mt-4 font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
-          You saw it all.
+          You saw the tools.
         </h3>
         <p className="mt-3 text-base text-[var(--ivory)]/70">
           Most people stopped looking.
@@ -28,7 +28,7 @@ export function DiscoveryCompletion({ onExploreAgain, children }: Props) {
 
       <div className="border-t border-[var(--gold)]/20 pt-10">
         <p className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]">
-          The design doesn&apos;t end here
+          The work doesn&apos;t end here
         </p>
         <p className="mx-auto mt-3 max-w-md text-center text-sm leading-relaxed text-[var(--ivory)]/70">
           Each piece in The Ashlar Craftsman collection carries a story of its
