@@ -215,6 +215,16 @@ export function AdminProductsManager() {
         title="Products"
         subtitle="Create, edit, publish, and manage inventory without touching code."
       />
+      <p className="mt-3 text-sm text-white/55">
+        Place a transparent PNG on a tee mockup in the{" "}
+        <a
+          href="/admin/print-editor"
+          className="text-[var(--gold)] underline-offset-2 hover:underline"
+        >
+          Print Editor
+        </a>
+        .
+      </p>
       {mode === "demo" && (
         <p className="mt-4 rounded-2xl border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-4 py-3 text-sm text-[var(--gold)]">
           Supabase is not connected — product saves require schema + env keys.
@@ -266,6 +276,12 @@ export function AdminProductsManager() {
                     >
                       Edit
                     </button>
+                    <a
+                      href={`/admin/print-editor?product=${product.id}`}
+                      className="rounded-full bg-white/10 px-3 py-1.5 text-xs"
+                    >
+                      Print
+                    </a>
                     <button
                       type="button"
                       onClick={() => duplicateProduct(product)}

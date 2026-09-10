@@ -2,7 +2,9 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { ShirtPrintComposer } from "@/components/print/ShirtPrintComposer";
 import { cn } from "@/lib/utils";
+import { constrainLayout } from "@/lib/print/layout";
 import { getProductPrintArt } from "@/lib/products/media";
 import type { Product, ProductColor } from "@/types";
 
@@ -69,9 +71,13 @@ export function ProductVisual({
     fill.toLowerCase() === "#ffffff" ||
     fill.toLowerCase() === "#d6d1c7";
   const stroke = light ? "#1E2A44" : "#F7F2E7";
+  const savedLayout =
+    product.printLayout?.designUrl
+      ? constrainLayout(product.printLayout)
+      : null;
   const printArt = getProductPrintArt(product);
   const markSrc = printArt ?? "/shirt-mark-sm.png";
-  const customPrint = Boolean(printArt);
+  const customPrint = Boolean(printArt) && !savedLayout;
   const clipId = `shirt-body-${product.slug}-${size}-${detail ? "d" : "n"}`;
 
   const mark = customPrint
@@ -83,15 +89,33 @@ export function ProductVisual({
       : SIZE_MAP[size].mark;
 
   const label = `${product.name}${color ? ` in ${color.name}` : ""}`;
+  const wrapClass = cn(
+    "relative mx-auto w-full",
+    detail ? "max-w-[360px]" : SIZE_MAP[size].wrap,
+    className,
+  );
+
+  /* Admin-saved normalized placement — same composer as the print editor */
+  if (savedLayout) {
+    return (
+      <div
+        className={wrapClass}
+        role={decorative ? "presentation" : "img"}
+        aria-hidden={decorative || undefined}
+        aria-label={decorative ? undefined : label}
+      >
+        <ShirtPrintComposer
+          layout={savedLayout}
+          shirtColor={fill}
+          editing={false}
+          className="max-w-none"
+        />
+      </div>
+    );
+  }
 
   return (
-    <div
-      className={cn(
-        "relative mx-auto w-full",
-        detail ? "max-w-[360px]" : SIZE_MAP[size].wrap,
-        className,
-      )}
-    >
+    <div className={wrapClass}>
       <svg
         viewBox="0 0 200 220"
         className="h-full w-full drop-shadow-[0_18px_36px_rgba(0,0,0,0.28)]"

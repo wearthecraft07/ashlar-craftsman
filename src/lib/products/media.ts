@@ -50,6 +50,9 @@ function isUsablePhoto(src: string | undefined): src is string {
 
 /** Raster print art used on the shirt mock (not photography). */
 export function getProductPrintArt(product: Product): string | null {
+  if (product.printLayout?.designUrl) {
+    return product.printLayout.designUrl;
+  }
   const images = product.images ?? [];
   return (
     images.find((src) => /^\/products\/[^/]+\.(jpe?g|png|webp|avif)$/i.test(src)) ??

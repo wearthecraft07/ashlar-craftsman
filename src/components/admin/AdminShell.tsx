@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
   FileText,
+  LayoutTemplate,
   Megaphone,
   Package,
   Shirt,
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/admin", label: "Dashboard", icon: BarChart3 },
   { href: "/admin/products", label: "Products", icon: Shirt },
+  { href: "/admin/print-editor", label: "Print Editor", icon: LayoutTemplate },
   { href: "/admin/categories", label: "Categories", icon: Package },
   { href: "/admin/avatar", label: "Avatar Studio", icon: Sparkles },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },

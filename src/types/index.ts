@@ -31,6 +31,19 @@ export type Category = {
   enabled: boolean;
 };
 
+/** Normalized tee print placement (admin editor ↔ storefront). */
+export type ProductPrintLayout = {
+  designUrl: string | null;
+  mockupUrl: string | null;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  printArea: { x: number; y: number; width: number; height: number };
+  designAspect: number;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -51,6 +64,8 @@ export type Product = {
   inventory: number;
   lowStockThreshold?: number;
   status?: ProductStatus;
+  /** Saved T-shirt design placement when configured in admin. */
+  printLayout?: ProductPrintLayout | null;
   createdAt: string;
   updatedAt?: string;
 };

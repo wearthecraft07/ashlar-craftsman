@@ -72,6 +72,8 @@ create table if not exists public.products (
   low_stock_threshold integer not null default 5,
   status text not null default 'draft'
     check (status in ('draft', 'published', 'out_of_stock', 'archived')),
+  -- Normalized T-shirt design placement (admin print editor)
+  print_layout jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

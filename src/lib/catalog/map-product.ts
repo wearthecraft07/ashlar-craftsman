@@ -1,3 +1,4 @@
+import { parsePrintLayout } from "@/lib/print/layout";
 import type { Product, ProductColor, ProductStatus } from "@/types";
 
 export type DbProduct = {
@@ -20,6 +21,7 @@ export type DbProduct = {
   inventory: number;
   low_stock_threshold?: number | null;
   status?: ProductStatus | null;
+  print_layout?: unknown;
   created_at: string;
   updated_at?: string | null;
 };
@@ -28,6 +30,7 @@ export function mapDbProduct(row: DbProduct): Product {
   const listPrice = row.price;
   const salePrice = row.sale_price ?? undefined;
   const onSale = typeof salePrice === "number" && salePrice > 0 && salePrice < listPrice;
+  const printLayout = parsePrintLayout(row.print_layout);
 
   return {
     id: row.id,
@@ -49,6 +52,7 @@ export function mapDbProduct(row: DbProduct): Product {
     inventory: row.inventory,
     lowStockThreshold: row.low_stock_threshold ?? 5,
     status: row.status ?? "published",
+    printLayout: printLayout ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at ?? undefined,
   };
