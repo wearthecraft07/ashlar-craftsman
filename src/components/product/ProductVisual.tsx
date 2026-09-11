@@ -99,7 +99,7 @@ export function ProductVisual({
   if (savedLayout) {
     return (
       <div
-        className={wrapClass}
+        className={cn(wrapClass, "aspect-[200/220]")}
         role={decorative ? "presentation" : "img"}
         aria-hidden={decorative || undefined}
         aria-label={decorative ? undefined : label}
@@ -108,7 +108,7 @@ export function ProductVisual({
           layout={savedLayout}
           shirtColor={fill}
           editing={false}
-          className="max-w-none"
+          className="absolute inset-0 h-full w-full max-w-none"
         />
       </div>
     );

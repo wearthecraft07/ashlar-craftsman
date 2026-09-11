@@ -29,7 +29,7 @@ export function ProductCard({
           aspect="portrait"
           className="transition duration-500 group-hover:-translate-y-0.5 motion-reduce:group-hover:translate-y-0"
         >
-          <div className="transition duration-500 group-hover:scale-[1.04] motion-reduce:group-hover:scale-100">
+          <div className="w-full max-w-[200px] transition duration-500 group-hover:scale-[1.04] motion-reduce:group-hover:scale-100">
             <ProductVisual product={product} size="md" decorative />
           </div>
           {product.bestSeller && (

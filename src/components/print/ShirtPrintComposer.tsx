@@ -171,11 +171,11 @@ export function ShirtPrintComposer({
     <div
       ref={stageRef}
       className={cn(
-        "relative mx-auto w-full max-w-[340px] select-none",
+        "relative mx-auto aspect-[200/220] w-full max-w-[340px] select-none",
         className,
       )}
     >
-      <div className="relative aspect-[200/220] w-full">
+      <div className="absolute inset-0">
         {showMockup ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

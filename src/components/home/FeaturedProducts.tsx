@@ -22,9 +22,9 @@ function FeaturedCard({ product, index }: { product: Product; index: number }) {
       <article className="group flex h-full flex-col">
         <Link href={`/shop/${product.slug}`} className="block">
           <ProductStage aspect="portrait">
-            <div className="transition duration-500 group-hover:scale-[1.04] motion-reduce:group-hover:scale-100">
-              <ProductVisual product={product} size="md" decorative />
-            </div>
+          <div className="w-full max-w-[200px] transition duration-500 group-hover:scale-[1.04] motion-reduce:group-hover:scale-100">
+            <ProductVisual product={product} size="md" decorative />
+          </div>
           </ProductStage>
         </Link>
         <div className="mt-5 flex flex-1 flex-col">
