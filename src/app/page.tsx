@@ -13,7 +13,8 @@ import { MilestonesTeaser } from "@/components/home/MilestonesTeaser";
 import { Newsletter } from "@/components/home/Newsletter";
 import { Philosophy } from "@/components/home/Philosophy";
 
-export const revalidate = 60;
+/** Keep featured catalog in sync with admin print-layout saves. */
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: "Craft Your Character",
