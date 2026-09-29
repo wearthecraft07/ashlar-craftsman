@@ -30,7 +30,12 @@ type DragMode = "move" | "resize" | "rotate" | null;
 
 /**
  * Shared tee + design composition for admin editor and storefront.
- * Placement uses normalized print-area coordinates.
+ *
+ * Coordinate space:
+ *   stage (3:4 mockup box)
+ *     └── shirt photo (fills stage)
+ *     └── print-safe area (fractions of stage / shirt)
+ *           └── artwork (fractions of print-safe area)
  */
 export function ShirtPrintComposer({
   layout,
@@ -39,6 +44,7 @@ export function ShirtPrintComposer({
   className,
   onChange,
 }: Props) {
+  /** Mockup box — print-area % and drag math are relative to this element. */
   const stageRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<DragMode>(null);
   const [designBroken, setDesignBroken] = useState(false);
@@ -171,8 +177,12 @@ export function ShirtPrintComposer({
         className,
       )}
     >
-      <div className="absolute inset-0">
-        {/* Tee body stays under print art — photographic mockup uses z-10 internally */}
+      {/*
+        One mockup coordinate space: shirt fills the 3:4 stage; print-safe
+        area + artwork are percentage overlays of that same box — never the
+        outer beige preview padding.
+      */}
+      <div className="absolute inset-0 overflow-hidden">
         <div className="pointer-events-none absolute inset-0 z-0">
           {showMockup ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -184,10 +194,7 @@ export function ShirtPrintComposer({
               onError={() => setMockupBroken(true)}
             />
           ) : (
-            <TshirtBodySvg
-              shirtColor={fill}
-              className="absolute inset-0 h-full w-full"
-            />
+            <TshirtBodySvg shirtColor={fill} fillContainer />
           )}
         </div>
 
@@ -256,7 +263,7 @@ export function ShirtPrintComposer({
         )}
 
         {layout.designUrl && designBroken && (
-          <p className="absolute inset-x-4 bottom-4 rounded-xl bg-black/55 px-3 py-2 text-center text-xs text-white/80">
+          <p className="absolute inset-x-4 bottom-4 z-40 rounded-xl bg-black/55 px-3 py-2 text-center text-xs text-white/80">
             Design image unavailable
           </p>
         )}

@@ -27,6 +27,11 @@ type Props = {
   label?: string;
   /** Soften artwork into fabric (default true) */
   printedLook?: boolean;
+  /**
+   * Fill a parent mockup frame instead of establishing aspect/centering.
+   * Used by ShirtPrintComposer so print-area overlays share the same box.
+   */
+  fillContainer?: boolean;
 };
 
 function isNearWhite(hex: string) {
@@ -48,6 +53,7 @@ export function TshirtMockup({
   decorative,
   label,
   printedLook = true,
+  fillContainer = false,
 }: Props) {
   const fill = shirtColor || "#FFFFFF";
   const light = isLightShirtColor(fill);
@@ -80,7 +86,12 @@ export function TshirtMockup({
 
   return (
     <div
-      className={cn("relative mx-auto aspect-[3/4] w-full", className)}
+      className={cn(
+        fillContainer
+          ? "absolute inset-0 h-full w-full"
+          : "relative mx-auto aspect-[3/4] w-full",
+        className,
+      )}
       role={decorative ? "presentation" : "img"}
       aria-hidden={decorative || undefined}
       aria-label={decorative ? undefined : label}
@@ -198,9 +209,12 @@ export function TshirtMockup({
 export function TshirtBodySvg({
   shirtColor,
   className,
+  fillContainer = true,
 }: {
   shirtColor: string;
   className?: string;
+  /** Fill parent mockup frame (default true for print composer). */
+  fillContainer?: boolean;
 }) {
   return (
     <TshirtMockup
@@ -208,6 +222,7 @@ export function TshirtBodySvg({
       artworkSrc={null}
       className={className}
       decorative
+      fillContainer={fillContainer}
     />
   );
 }
