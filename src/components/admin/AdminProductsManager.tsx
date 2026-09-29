@@ -133,8 +133,14 @@ export function AdminProductsManager() {
         .map((t) => t.trim())
         .filter(Boolean),
       colors: [
-        { id: "black", name: "Black", hex: "#0A0A0A" },
-        { id: "white", name: "White", hex: "#F7F7F5" },
+        { id: "white", name: "White", hex: "#FFFFFF" },
+        { id: "black", name: "Black", hex: "#1A1A1A" },
+        { id: "navy", name: "Navy", hex: "#1E2A44" },
+        { id: "gray", name: "Gray", hex: "#8B8B8B" },
+        { id: "red", name: "Red", hex: "#8B2E2E" },
+        { id: "blue", name: "Blue", hex: "#2F4A6E" },
+        { id: "green", name: "Green", hex: "#3D5A45" },
+        { id: "beige", name: "Beige", hex: "#D6D1C7" },
       ],
     };
 

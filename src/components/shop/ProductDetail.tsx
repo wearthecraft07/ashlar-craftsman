@@ -16,6 +16,10 @@ import { Button } from "@/components/ui/Button";
 import { isLodgeCompatibleProduct } from "@/data/lodge-edition";
 import { getProductStory } from "@/data/product-stories";
 import { useCartStore } from "@/lib/cart-store";
+import {
+  defaultShirtColor,
+  resolveShirtColors,
+} from "@/lib/products/shirt-colors";
 import { formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types";
 import { useMemo, useState } from "react";
@@ -27,7 +31,8 @@ type Props = {
 
 export function ProductDetail({ product, relatedProducts }: Props) {
   const story = useMemo(() => getProductStory(product), [product]);
-  const [color, setColor] = useState(product.colors[0]);
+  const colors = useMemo(() => resolveShirtColors(product), [product]);
+  const [color, setColor] = useState(() => defaultShirtColor(product));
   const [size, setSize] = useState(product.sizes[2] ?? product.sizes[0]);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -84,7 +89,7 @@ export function ProductDetail({ product, relatedProducts }: Props) {
               Color
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
-              {product.colors.map((item) => (
+              {colors.map((item) => (
                 <button
                   key={item.id}
                   type="button"
@@ -93,7 +98,7 @@ export function ProductDetail({ product, relatedProducts }: Props) {
                   onClick={() => setColor(item)}
                   className={`h-10 w-10 rounded-full border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                     color.id === item.id
-                      ? "border-[var(--gold)]"
+                      ? "border-[var(--gold)] ring-2 ring-[var(--gold)]/40 ring-offset-2"
                       : "border-black/10"
                   }`}
                   style={{ backgroundColor: item.hex }}

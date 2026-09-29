@@ -203,7 +203,7 @@ export function ShirtCustomizer() {
         <div className="lodge-card rounded-[1.75rem] p-4 sm:p-6">
           <div className="mx-auto max-w-md">
             <ShirtMockup
-              colorHex={color?.hex ?? "#0A0A0A"}
+              colorHex={color?.hex ?? "#FFFFFF"}
               placement={placement}
               designSize={designSize}
               artworkUrl={previewUrl}

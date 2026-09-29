@@ -482,7 +482,6 @@ export function LodgeEditionExperience({ products }: Props) {
                 <div className="relative w-full max-w-[280px]">
                   <ProductVisual
                     product={product}
-                    color={product.colors[0]}
                     size="lg"
                     decorative
                   />

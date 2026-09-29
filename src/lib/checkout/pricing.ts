@@ -1,5 +1,6 @@
 import { PRODUCTS } from "@/data/products";
 import { mapDbProduct, type DbProduct } from "@/lib/catalog/map-product";
+import { TSHIRT_COLORS } from "@/lib/products/shirt-colors";
 import { createServiceClient } from "@/lib/supabase/admin";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Product } from "@/types";
@@ -82,7 +83,7 @@ export async function priceCheckoutLines(inputs: CheckoutLineInput[]) {
 
     const color =
       product.colors.find((c) => c.id === input.color.id) ??
-      product.colors[0] ??
+      TSHIRT_COLORS.find((c) => c.id === input.color.id) ??
       input.color;
 
     const line: PricedLine = {

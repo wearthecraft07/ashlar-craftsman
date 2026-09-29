@@ -3,7 +3,6 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
@@ -15,6 +14,8 @@ import {
   printAreaStyle,
   type PrintLayout,
 } from "@/lib/print/layout";
+import { TshirtBodySvg } from "@/components/product/TshirtMockup";
+import { isLightShirtColor } from "@/lib/products/shirt-colors";
 
 type Props = {
   layout: PrintLayout;
@@ -33,12 +34,11 @@ type DragMode = "move" | "resize" | "rotate" | null;
  */
 export function ShirtPrintComposer({
   layout,
-  shirtColor = "#0A0A0A",
+  shirtColor = "#FFFFFF",
   editing = false,
   className,
   onChange,
 }: Props) {
-  const clipId = useId().replace(/:/g, "");
   const stageRef = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<DragMode>(null);
   const [designBroken, setDesignBroken] = useState(false);
@@ -59,11 +59,7 @@ export function ShirtPrintComposer({
   }, [layout.mockupUrl]);
 
   const fill = shirtColor;
-  const light =
-    fill.toLowerCase() === "#f7f7f5" ||
-    fill.toLowerCase() === "#ffffff" ||
-    fill.toLowerCase() === "#d6d1c7";
-  const stroke = light ? "#1E2A44" : "#F7F2E7";
+  const lightShirt = isLightShirtColor(fill);
 
   const emit = useCallback(
     (next: PrintLayout) => {
@@ -171,7 +167,7 @@ export function ShirtPrintComposer({
     <div
       ref={stageRef}
       className={cn(
-        "relative mx-auto aspect-[200/220] w-full max-w-[340px] select-none",
+        "relative mx-auto aspect-[3/4] w-full max-w-[340px] select-none",
         className,
       )}
     >
@@ -186,39 +182,10 @@ export function ShirtPrintComposer({
             onError={() => setMockupBroken(true)}
           />
         ) : (
-          <svg
-            viewBox="0 0 200 220"
-            className="absolute inset-0 h-full w-full drop-shadow-[0_18px_36px_rgba(0,0,0,0.28)]"
-            aria-hidden
-          >
-            <defs>
-              <clipPath id={`body-${clipId}`}>
-                <path d="M60 96 L140 96 L140 190 L60 190 Z" />
-              </clipPath>
-            </defs>
-            <ellipse
-              cx="100"
-              cy="208"
-              rx="48"
-              ry="6"
-              fill="rgba(0,0,0,0.28)"
-              opacity="0.55"
-            />
-            <path
-              d="M40 70 L70 48 L90 68 L110 68 L130 48 L160 70 L150 100 L140 96 L140 190 L60 190 L60 96 L50 100 Z"
-              fill={fill}
-              stroke={stroke}
-              strokeWidth="2.75"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M70 72 L78 96 M130 72 L122 96"
-              fill="none"
-              stroke={stroke}
-              strokeWidth="1"
-              opacity="0.18"
-            />
-          </svg>
+          <TshirtBodySvg
+            shirtColor={fill}
+            className="absolute inset-0 h-full w-full"
+          />
         )}
 
         {editing && (
@@ -257,7 +224,11 @@ export function ShirtPrintComposer({
             <img
               src={layout.designUrl!}
               alt=""
-              className="pointer-events-none h-full w-full object-contain"
+              className={cn(
+                "pointer-events-none h-full w-full object-contain",
+                !editing && lightShirt && "mix-blend-multiply opacity-[0.92]",
+                !editing && !lightShirt && "opacity-95",
+              )}
               draggable={false}
               onError={() => setDesignBroken(true)}
             />

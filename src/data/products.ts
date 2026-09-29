@@ -1,13 +1,8 @@
 import type { Product } from "@/types";
+import { TSHIRT_COLORS } from "@/lib/products/shirt-colors";
 
-export const SHIRT_COLORS = [
-  { id: "black", name: "Black", hex: "#0A0A0A" },
-  { id: "white", name: "White", hex: "#F7F7F5" },
-  { id: "charcoal", name: "Charcoal", hex: "#2A2A2A" },
-  { id: "gold", name: "Gold Mist", hex: "#C9A227" },
-  { id: "stone", name: "Stone", hex: "#D6D1C7" },
-  { id: "ink", name: "Ink Navy", hex: "#141820" },
-];
+/** Re-export storefront palette (white-first). */
+export const SHIRT_COLORS = TSHIRT_COLORS;
 
 export const PRODUCTS: Product[] = [
   {
@@ -19,7 +14,7 @@ export const PRODUCTS: Product[] = [
     price: 4800,
     compareAtPrice: 5800,
     category: "essentials",
-    colors: SHIRT_COLORS.slice(0, 4),
+    colors: SHIRT_COLORS,
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     images: ["/shirt-mark.png"],
     tags: ["cotton", "gold", "everyday"],
@@ -36,7 +31,7 @@ export const PRODUCTS: Product[] = [
       "Signature tagline tee with bold outline artwork. Built for movement and lasting wear.",
     price: 5200,
     category: "premium",
-    colors: SHIRT_COLORS.filter((c) => c.id !== "gold"),
+    colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL", "XXL"],
     images: ["/products/journey.svg"],
     tags: ["signature", "premium"],
@@ -53,11 +48,7 @@ export const PRODUCTS: Product[] = [
       "Geometric craft motif on charcoal. Luxury streetwear with classic proportion.",
     price: 5000,
     category: "essentials",
-    colors: [
-      SHIRT_COLORS[0],
-      SHIRT_COLORS[2],
-      SHIRT_COLORS[5],
-    ],
+    colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
     images: ["/products/square-line.svg"],
     tags: ["geometry", "charcoal"],
@@ -90,7 +81,7 @@ export const PRODUCTS: Product[] = [
       "Limited drop with twin-pillar illustration and gold ink accents.",
     price: 5800,
     category: "limited",
-    colors: [SHIRT_COLORS[0], SHIRT_COLORS[1], SHIRT_COLORS[2]],
+    colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
     images: ["/products/pillars.svg"],
     tags: ["limited", "gold-ink"],
@@ -106,7 +97,7 @@ export const PRODUCTS: Product[] = [
       "Minimal mark, maximum presence. Soft hand-feel with reinforced collar.",
     price: 4600,
     category: "essentials",
-    colors: SHIRT_COLORS.slice(0, 3),
+    colors: SHIRT_COLORS,
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
     images: ["/products/true-level.svg"],
     tags: ["minimal", "soft"],
@@ -121,7 +112,7 @@ export const PRODUCTS: Product[] = [
       "Premium cut with gold edge detailing and tonal craftsmanship badge.",
     price: 6200,
     category: "premium",
-    colors: [SHIRT_COLORS[0], SHIRT_COLORS[2], SHIRT_COLORS[5]],
+    colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
     images: ["/products/gold-edge.svg"],
     tags: ["premium", "detail"],
@@ -137,7 +128,7 @@ export const PRODUCTS: Product[] = [
       "Textured print inspired by cut ashlar. A wearable piece of craft.",
     price: 5400,
     category: "premium",
-    colors: [SHIRT_COLORS[1], SHIRT_COLORS[2], SHIRT_COLORS[4]],
+    colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL", "XXL"],
     images: ["/products/stonework.svg"],
     tags: ["texture", "craft"],

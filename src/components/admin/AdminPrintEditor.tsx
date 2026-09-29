@@ -34,7 +34,9 @@ export function AdminPrintEditor() {
     [products, productId],
   );
 
-  const shirtColor = selected?.colors[0]?.hex ?? "#0A0A0A";
+  const shirtColor = selected?.colors.find((c) => c.id === "white")?.hex
+    ?? selected?.colors[0]?.hex
+    ?? "#FFFFFF";
   const dirty = JSON.stringify(layout) !== JSON.stringify(savedSnapshot);
 
   const loadProducts = useCallback(async () => {

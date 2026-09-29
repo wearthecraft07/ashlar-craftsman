@@ -80,7 +80,16 @@ export function getApparelProduct(styleId: ApparelStyleId): Product | null {
 
 export function colorsForApparel(styleId: ApparelStyleId): ProductColor[] {
   const product = getApparelProduct(styleId);
-  return product?.colors?.length ? product.colors : SHIRT_COLORS;
+  // Prefer full white-first storefront palette when product colors are sparse.
+  if (product?.colors?.some((c) => c.id === "white")) {
+    return product.colors[0]?.id === "white"
+      ? product.colors
+      : [
+          ...product.colors.filter((c) => c.id === "white"),
+          ...product.colors.filter((c) => c.id !== "white"),
+        ];
+  }
+  return SHIRT_COLORS;
 }
 
 export function sizesForApparel(styleId: ApparelStyleId): string[] {

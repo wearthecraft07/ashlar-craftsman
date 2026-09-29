@@ -3,9 +3,11 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { ShirtPrintComposer } from "@/components/print/ShirtPrintComposer";
+import { TshirtMockup } from "@/components/product/TshirtMockup";
 import { cn } from "@/lib/utils";
 import { constrainLayout } from "@/lib/print/layout";
 import { getProductPrintArt } from "@/lib/products/media";
+import { defaultShirtColor } from "@/lib/products/shirt-colors";
 import type { Product, ProductColor } from "@/types";
 
 type Size = "sm" | "md" | "lg" | "hero";
@@ -26,31 +28,31 @@ const SIZE_MAP: Record<
 > = {
   sm: {
     wrap: "max-w-[140px]",
-    mark: { x: 72, y: 94, w: 56, h: 56 },
+    mark: { x: 64, y: 78, w: 72, h: 72 },
   },
   md: {
     wrap: "max-w-[200px]",
-    mark: { x: 68, y: 90, w: 64, h: 64 },
+    mark: { x: 60, y: 76, w: 80, h: 80 },
   },
   lg: {
     wrap: "max-w-[280px]",
-    mark: { x: 64, y: 86, w: 72, h: 72 },
+    mark: { x: 56, y: 74, w: 88, h: 88 },
   },
   hero: {
     wrap: "max-w-[340px]",
-    mark: { x: 60, y: 82, w: 80, h: 80 },
+    mark: { x: 52, y: 72, w: 96, h: 96 },
   },
 };
 
-/** Chest print placement tuned to the tee body (below collar, inside side seams). */
+/** Chest print placement tuned to the photographic tee body. */
 const PRINT_MAP: Record<
   Size,
   { x: number; y: number; w: number; h: number }
 > = {
-  sm: { x: 66, y: 102, w: 68, h: 68 },
-  md: { x: 62, y: 100, w: 76, h: 76 },
-  lg: { x: 58, y: 98, w: 84, h: 84 },
-  hero: { x: 54, y: 96, w: 92, h: 92 },
+  sm: { x: 58, y: 82, w: 84, h: 84 },
+  md: { x: 54, y: 80, w: 92, h: 92 },
+  lg: { x: 50, y: 78, w: 100, h: 100 },
+  hero: { x: 46, y: 76, w: 108, h: 108 },
 };
 
 /**
@@ -65,12 +67,8 @@ export function ProductVisual({
   className,
   decorative,
 }: Props) {
-  const fill = color?.hex ?? product.colors[0]?.hex ?? "#0A0A0A";
-  const light =
-    fill.toLowerCase() === "#f7f7f5" ||
-    fill.toLowerCase() === "#ffffff" ||
-    fill.toLowerCase() === "#d6d1c7";
-  const stroke = light ? "#1E2A44" : "#F7F2E7";
+  const fill =
+    color?.hex ?? defaultShirtColor(product).hex ?? "#FFFFFF";
   const savedLayout =
     product.printLayout?.designUrl
       ? constrainLayout(product.printLayout)
@@ -78,14 +76,13 @@ export function ProductVisual({
   const printArt = getProductPrintArt(product);
   const markSrc = printArt ?? "/shirt-mark-sm.png";
   const customPrint = Boolean(printArt) && !savedLayout;
-  const clipId = `shirt-body-${product.slug}-${size}-${detail ? "d" : "n"}`;
 
   const mark = customPrint
     ? detail
-      ? { x: 48, y: 88, w: 104, h: 104 }
+      ? { x: 44, y: 72, w: 112, h: 112 }
       : PRINT_MAP[size]
     : detail
-      ? { x: 50, y: 70, w: 100, h: 100 }
+      ? { x: 48, y: 68, w: 104, h: 104 }
       : SIZE_MAP[size].mark;
 
   const label = `${product.name}${color ? ` in ${color.name}` : ""}`;
@@ -99,7 +96,7 @@ export function ProductVisual({
   if (savedLayout) {
     return (
       <div
-        className={cn(wrapClass, "aspect-[200/220]")}
+        className={cn(wrapClass, "aspect-[3/4]")}
         role={decorative ? "presentation" : "img"}
         aria-hidden={decorative || undefined}
         aria-label={decorative ? undefined : label}
@@ -115,56 +112,16 @@ export function ProductVisual({
   }
 
   return (
-    <div className={wrapClass}>
-      <svg
-        viewBox="0 0 200 220"
-        className="h-full w-full drop-shadow-[0_18px_36px_rgba(0,0,0,0.28)]"
-        role={decorative ? "presentation" : "img"}
-        aria-hidden={decorative || undefined}
-        aria-label={decorative ? undefined : label}
-      >
-        <defs>
-          {/* Keep print inside the tee body */}
-          <clipPath id={clipId}>
-            <path d="M60 96 L140 96 L140 190 L60 190 Z" />
-          </clipPath>
-        </defs>
-
-        {/* Soft ground shadow */}
-        <ellipse
-          cx="100"
-          cy="208"
-          rx="48"
-          ry="6"
-          fill="rgba(0,0,0,0.28)"
-          opacity="0.55"
-        />
-        <path
-          d="M40 70 L70 48 L90 68 L110 68 L130 48 L160 70 L150 100 L140 96 L140 190 L60 190 L60 96 L50 100 Z"
-          fill={fill}
-          stroke={stroke}
-          strokeWidth="2.75"
-          strokeLinejoin="round"
-        />
-        {/* Soft fold lines for depth — subtle, brand-consistent */}
-        <path
-          d="M70 72 L78 96 M130 72 L122 96"
-          fill="none"
-          stroke={stroke}
-          strokeWidth="1"
-          opacity="0.18"
-        />
-        <image
-          href={markSrc}
-          x={mark.x}
-          y={mark.y}
-          width={mark.w}
-          height={mark.h}
-          preserveAspectRatio="xMidYMid meet"
-          clipPath={customPrint ? `url(#${clipId})` : undefined}
-          opacity={detail ? 1 : 0.98}
-        />
-      </svg>
+    <div className={cn(wrapClass, "aspect-[3/4]")}>
+      <TshirtMockup
+        shirtColor={fill}
+        artworkSrc={markSrc}
+        artworkBox={mark}
+        clipArtwork={customPrint}
+        decorative={decorative}
+        label={label}
+        className="absolute inset-0 h-full w-full"
+      />
     </div>
   );
 }
