@@ -27,7 +27,7 @@ values
   (
     'ashlar-mark-tee', 'Ashlar Mark Tee',
     'Heavyweight cotton with an embroidered gold mark. Clean silhouette, street-ready finish.',
-    5800, 4800, 'AC-MARK-TEE', 'essentials',
+    3000, null, 'AC-MARK-TEE', 'essentials',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"gold","name":"Gold Mist","hex":"#C9A227"}]'::jsonb,
     array['XS','S','M','L','XL','XXL'],
     array['/shirt-mark.png'],
@@ -37,7 +37,7 @@ values
   (
     'craft-your-journey', 'Craft Your Journey Tee',
     'Signature tagline tee with bold outline artwork. Built for movement and lasting wear.',
-    5200, null, 'AC-JOURNEY', 'premium',
+    3000, null, 'AC-JOURNEY', 'premium',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"stone","name":"Stone","hex":"#D6D1C7"},{"id":"ink","name":"Ink Navy","hex":"#141820"}]'::jsonb,
     array['S','M','L','XL','XXL'],
     array['/shirt-mark.png'],
@@ -47,7 +47,7 @@ values
   (
     'square-line-tee', 'Square Line Tee',
     'Geometric craft motif on charcoal. Luxury streetwear with classic proportion.',
-    5000, null, 'AC-SQUARE', 'essentials',
+    3000, null, 'AC-SQUARE', 'essentials',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"ink","name":"Ink Navy","hex":"#141820"}]'::jsonb,
     array['S','M','L','XL'],
     array['/shirt-mark.png'],
@@ -57,7 +57,7 @@ values
   (
     'custom-avatar-tee', 'Custom Avatar Tee',
     'Your avatar, your shirt. Design in the studio and print on premium blanks.',
-    6400, null, 'AC-AVATAR', 'custom',
+    3000, null, 'AC-AVATAR', 'custom',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"gold","name":"Gold Mist","hex":"#C9A227"},{"id":"stone","name":"Stone","hex":"#D6D1C7"},{"id":"ink","name":"Ink Navy","hex":"#141820"}]'::jsonb,
     array['XS','S','M','L','XL','XXL'],
     array['/shirt-mark.png'],
@@ -67,7 +67,7 @@ values
   (
     'twin-pillars-tee', 'Twin Pillars Tee',
     'Limited drop with twin-pillar illustration and gold ink accents.',
-    5800, null, 'AC-PILLARS', 'limited',
+    3000, null, 'AC-PILLARS', 'limited',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"}]'::jsonb,
     array['S','M','L','XL'],
     array['/shirt-mark.png'],
@@ -77,7 +77,7 @@ values
   (
     'true-level-tee', 'True Level Tee',
     'Minimal mark, maximum presence. Soft hand-feel with reinforced collar.',
-    4600, null, 'AC-LEVEL', 'essentials',
+    3000, null, 'AC-LEVEL', 'essentials',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"}]'::jsonb,
     array['XS','S','M','L','XL','XXL'],
     array['/shirt-mark.png'],
@@ -87,7 +87,7 @@ values
   (
     'gold-edge-tee', 'Gold Edge Tee',
     'Premium cut with gold edge detailing and tonal craftsmanship badge.',
-    6200, null, 'AC-GOLD-EDGE', 'premium',
+    3000, null, 'AC-GOLD-EDGE', 'premium',
     '[{"id":"black","name":"Black","hex":"#0A0A0A"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"ink","name":"Ink Navy","hex":"#141820"}]'::jsonb,
     array['S','M','L','XL'],
     array['/shirt-mark.png'],
@@ -97,7 +97,7 @@ values
   (
     'stonework-tee', 'Stonework Tee',
     'Textured print inspired by cut ashlar. A wearable piece of craft.',
-    5400, null, 'AC-STONE', 'premium',
+    3000, null, 'AC-STONE', 'premium',
     '[{"id":"white","name":"White","hex":"#F7F7F5"},{"id":"charcoal","name":"Charcoal","hex":"#2A2A2A"},{"id":"stone","name":"Stone","hex":"#D6D1C7"}]'::jsonb,
     array['S','M','L','XL','XXL'],
     array['/shirt-mark.png'],

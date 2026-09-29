@@ -84,7 +84,7 @@ export function AdminOverview() {
 export function AdminProducts() {
   const [products, setProducts] = useState(PRODUCTS);
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("5200");
+  const [price, setPrice] = useState("3000");
   const [inventory, setInventory] = useState("50");
   const [message, setMessage] = useState("");
 
@@ -108,7 +108,7 @@ export function AdminProducts() {
       id: `prod_${Date.now()}`,
       slug: name.toLowerCase().replace(/\s+/g, "-"),
       name: name || "Untitled Tee",
-      price: Number(price) || 5000,
+      price: Number(price) || 3000,
       inventory: Number(inventory) || 0,
       category: "limited" as const,
       featured: false,

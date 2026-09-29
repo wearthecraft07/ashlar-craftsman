@@ -88,7 +88,7 @@ export function ShirtCustomizer() {
     };
   }, [draft]);
 
-  const price = product?.price ?? 6400;
+  const price = product?.price ?? 3000;
 
   async function lockDesign() {
     if (!stageRef.current || !sticker || !draft) return;

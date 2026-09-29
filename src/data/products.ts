@@ -11,8 +11,7 @@ export const PRODUCTS: Product[] = [
     name: "Ashlar Mark Tee",
     description:
       "Heavyweight cotton with an embroidered gold mark. Clean silhouette, street-ready finish.",
-    price: 4800,
-    compareAtPrice: 5800,
+    price: 3000,
     category: "essentials",
     colors: SHIRT_COLORS,
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
@@ -29,7 +28,7 @@ export const PRODUCTS: Product[] = [
     name: "Craft Your Journey Tee",
     description:
       "Signature tagline tee with bold outline artwork. Built for movement and lasting wear.",
-    price: 5200,
+    price: 3000,
     category: "premium",
     colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL", "XXL"],
@@ -46,7 +45,7 @@ export const PRODUCTS: Product[] = [
     name: "Square Line Tee",
     description:
       "Geometric craft motif on charcoal. Luxury streetwear with classic proportion.",
-    price: 5000,
+    price: 3000,
     category: "essentials",
     colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
@@ -62,7 +61,7 @@ export const PRODUCTS: Product[] = [
     name: "Custom Avatar Tee",
     description:
       "Your avatar, your shirt. Design in the studio and print on premium blanks.",
-    price: 6400,
+    price: 3000,
     category: "custom",
     colors: SHIRT_COLORS,
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
@@ -79,7 +78,7 @@ export const PRODUCTS: Product[] = [
     name: "Twin Pillars Tee",
     description:
       "Limited drop with twin-pillar illustration and gold ink accents.",
-    price: 5800,
+    price: 3000,
     category: "limited",
     colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
@@ -95,7 +94,7 @@ export const PRODUCTS: Product[] = [
     name: "True Level Tee",
     description:
       "Minimal mark, maximum presence. Soft hand-feel with reinforced collar.",
-    price: 4600,
+    price: 3000,
     category: "essentials",
     colors: SHIRT_COLORS,
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
@@ -110,7 +109,7 @@ export const PRODUCTS: Product[] = [
     name: "Gold Edge Tee",
     description:
       "Premium cut with gold edge detailing and tonal craftsmanship badge.",
-    price: 6200,
+    price: 3000,
     category: "premium",
     colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL"],
@@ -126,7 +125,7 @@ export const PRODUCTS: Product[] = [
     name: "Stonework Tee",
     description:
       "Textured print inspired by cut ashlar. A wearable piece of craft.",
-    price: 5400,
+    price: 3000,
     category: "premium",
     colors: SHIRT_COLORS,
     sizes: ["S", "M", "L", "XL", "XXL"],

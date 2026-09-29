@@ -17,7 +17,7 @@ const emptyForm = {
   slug: "",
   name: "",
   description: "",
-  price: "4800",
+  price: "3000",
   sale_price: "",
   sku: "",
   category: "essentials",

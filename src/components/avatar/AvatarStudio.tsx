@@ -331,7 +331,7 @@ export function AvatarStudio({
       productId: "prod_avatar_custom",
       slug: "custom-avatar-tee",
       name: `Custom Avatar Tee — ${name}`,
-      price: 6400,
+      price: 3000,
       color: {
         id: SHIRT_COLORS.find((c) => c.hex === shirtColor)?.id ?? "black",
         name: SHIRT_COLORS.find((c) => c.hex === shirtColor)?.name ?? "Black",

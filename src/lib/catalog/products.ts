@@ -14,8 +14,9 @@ function isPlaceholderImage(src: string) {
 }
 
 /**
- * Prefer curated static artwork when the DB still has placeholder/SVG images.
- * Real admin-uploaded raster photos keep priority.
+ * Prefer curated static catalog fields when the DB row is stale/placeholder.
+ * Real admin-uploaded raster photos keep priority for images.
+ * Known catalog tee prices always follow `src/data/products.ts`.
  */
 export function enrichProductFromStatic(product: Product): Product {
   const staticProduct = PRODUCTS.find(
@@ -36,7 +37,13 @@ export function enrichProductFromStatic(product: Product): Product {
     ];
   }
 
-  return { ...product, images };
+  return {
+    ...product,
+    images,
+    price: staticProduct.price,
+    compareAtPrice: staticProduct.compareAtPrice,
+    salePrice: staticProduct.salePrice,
+  };
 }
 
 function staticProducts(includeUnpublished = false): Product[] {

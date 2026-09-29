@@ -1,4 +1,5 @@
 import { PRODUCTS } from "@/data/products";
+import { enrichProductFromStatic } from "@/lib/catalog/products";
 import { mapDbProduct, type DbProduct } from "@/lib/catalog/map-product";
 import { TSHIRT_COLORS } from "@/lib/products/shirt-colors";
 import { createServiceClient } from "@/lib/supabase/admin";
@@ -46,7 +47,9 @@ async function loadProduct(
       .select("*")
       .eq("id", productId)
       .maybeSingle();
-    if (byId.data) return mapDbProduct(byId.data as DbProduct);
+    if (byId.data) {
+      return enrichProductFromStatic(mapDbProduct(byId.data as DbProduct));
+    }
 
     for (const key of [slug, productId].filter(Boolean) as string[]) {
       const bySlug = await supabase
@@ -54,7 +57,9 @@ async function loadProduct(
         .select("*")
         .eq("slug", key)
         .maybeSingle();
-      if (bySlug.data) return mapDbProduct(bySlug.data as DbProduct);
+      if (bySlug.data) {
+        return enrichProductFromStatic(mapDbProduct(bySlug.data as DbProduct));
+      }
     }
   }
   return staticProduct(productId) ?? (slug ? staticProduct(slug) : null) ?? null;
