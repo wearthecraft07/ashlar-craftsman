@@ -31,11 +31,16 @@ export type PrintLayout = {
   designAspect: number;
 };
 
+/**
+ * Print-safe chest zone for the photographic tee mockup
+ * (`/mockups/tshirt-front.png`, 3:4). Fractions of the mockup box.
+ * Centered on the torso (~0.5), below the collar, above the hem.
+ */
 export const DEFAULT_PRINT_AREA: PrintArea = {
-  x: 0.3,
-  y: 0.436,
-  width: 0.4,
-  height: 0.382,
+  x: 0.32,
+  y: 0.28,
+  width: 0.36,
+  height: 0.3,
 };
 
 export const DEFAULT_PRINT_LAYOUT: PrintLayout = {
@@ -97,7 +102,9 @@ export function constrainLayout(layout: PrintLayout): PrintLayout {
     height,
     rotation: ((layout.rotation % 360) + 360) % 360,
     designAspect: aspect,
-    printArea: { ...DEFAULT_PRINT_AREA, ...layout.printArea },
+    // Always use the current mockup template zone — never keep a stale
+    // printArea saved against the old SVG tee proportions.
+    printArea: { ...DEFAULT_PRINT_AREA },
   };
 }
 
@@ -149,17 +156,7 @@ export function parsePrintLayout(raw: unknown): PrintLayout | null {
     return null;
   }
 
-  const printAreaRaw =
-    o.printArea && typeof o.printArea === "object"
-      ? (o.printArea as Record<string, unknown>)
-      : {};
-
-  const printArea: PrintArea = {
-    x: num(printAreaRaw.x, DEFAULT_PRINT_AREA.x),
-    y: num(printAreaRaw.y, DEFAULT_PRINT_AREA.y),
-    width: num(printAreaRaw.width, DEFAULT_PRINT_AREA.width),
-    height: num(printAreaRaw.height, DEFAULT_PRINT_AREA.height),
-  };
+  const printArea: PrintArea = { ...DEFAULT_PRINT_AREA };
 
   return constrainLayout({
     designUrl,

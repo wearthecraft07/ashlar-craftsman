@@ -28,19 +28,19 @@ const SIZE_MAP: Record<
 > = {
   sm: {
     wrap: "max-w-[140px]",
-    mark: { x: 64, y: 78, w: 72, h: 72 },
+    mark: { x: 64, y: 66, w: 72, h: 72 },
   },
   md: {
     wrap: "max-w-[200px]",
-    mark: { x: 60, y: 76, w: 80, h: 80 },
+    mark: { x: 60, y: 64, w: 80, h: 80 },
   },
   lg: {
     wrap: "max-w-[280px]",
-    mark: { x: 56, y: 74, w: 88, h: 88 },
+    mark: { x: 56, y: 62, w: 88, h: 88 },
   },
   hero: {
     wrap: "max-w-[340px]",
-    mark: { x: 52, y: 72, w: 96, h: 96 },
+    mark: { x: 52, y: 60, w: 96, h: 96 },
   },
 };
 
@@ -49,10 +49,10 @@ const PRINT_MAP: Record<
   Size,
   { x: number; y: number; w: number; h: number }
 > = {
-  sm: { x: 58, y: 82, w: 84, h: 84 },
-  md: { x: 54, y: 80, w: 92, h: 92 },
-  lg: { x: 50, y: 78, w: 100, h: 100 },
-  hero: { x: 46, y: 76, w: 108, h: 108 },
+  sm: { x: 58, y: 68, w: 84, h: 84 },
+  md: { x: 54, y: 66, w: 92, h: 92 },
+  lg: { x: 50, y: 64, w: 100, h: 100 },
+  hero: { x: 46, y: 62, w: 108, h: 108 },
 };
 
 /**
