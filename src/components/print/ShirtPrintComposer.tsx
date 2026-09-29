@@ -172,25 +172,28 @@ export function ShirtPrintComposer({
       )}
     >
       <div className="absolute inset-0">
-        {showMockup ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={layout.mockupUrl!}
-            alt=""
-            className="absolute inset-0 h-full w-full object-contain"
-            draggable={false}
-            onError={() => setMockupBroken(true)}
-          />
-        ) : (
-          <TshirtBodySvg
-            shirtColor={fill}
-            className="absolute inset-0 h-full w-full"
-          />
-        )}
+        {/* Tee body stays under print art — photographic mockup uses z-10 internally */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          {showMockup ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={layout.mockupUrl!}
+              alt=""
+              className="absolute inset-0 h-full w-full object-contain"
+              draggable={false}
+              onError={() => setMockupBroken(true)}
+            />
+          ) : (
+            <TshirtBodySvg
+              shirtColor={fill}
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
+        </div>
 
         {editing && (
           <div
-            className="pointer-events-none absolute border border-dashed border-[var(--gold)]/55 bg-[var(--gold)]/[0.04]"
+            className="pointer-events-none absolute z-20 border border-dashed border-[var(--gold)]/55 bg-[var(--gold)]/[0.04]"
             style={area}
             aria-hidden
           />
@@ -199,7 +202,7 @@ export function ShirtPrintComposer({
         {hasDesign && (
           <div
             className={cn(
-              "absolute",
+              "absolute z-30",
               editing && onChange
                 ? "cursor-move touch-none"
                 : "pointer-events-none",

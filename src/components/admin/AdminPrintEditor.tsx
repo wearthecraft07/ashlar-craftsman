@@ -102,38 +102,50 @@ export function AdminPrintEditor() {
       return;
     }
 
-    const body = new FormData();
-    body.append("file", file);
-    body.append("pngOnly", "1");
-    body.append("purpose", "print-design");
-    body.append("folder", "ashlar-craftsman/print-designs");
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("pngOnly", "1");
+      body.append("purpose", "print-design");
+      body.append("folder", "ashlar-craftsman/print-designs");
 
-    const res = await fetch("/api/upload", { method: "POST", body });
-    const data = await res.json();
-    setUploading(false);
+      const res = await fetch("/api/upload", { method: "POST", body });
+      const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) {
-      setError(data.error || "Upload failed.");
-      return;
-    }
+      if (!res.ok) {
+        setError(
+          (data as { error?: string }).error || "Upload failed.",
+        );
+        return;
+      }
 
-    const w = Number(data.width) || 1;
-    const h = Number(data.height) || 1;
-    const aspect = w / h;
+      const w = Number((data as { width?: number }).width) || 1;
+      const h = Number((data as { height?: number }).height) || 1;
+      const aspect = w / h;
+      const url = (data as { url?: string }).url;
+      if (!url) {
+        setError("Upload succeeded but no image URL was returned.");
+        return;
+      }
 
-    setLayout((prev) =>
-      resetPlacement(
-        layoutWithAspect(
-          {
-            ...prev,
-            designUrl: data.url as string,
-          },
-          aspect,
+      setLayout((prev) =>
+        resetPlacement(
+          layoutWithAspect(
+            {
+              ...prev,
+              designUrl: url,
+            },
+            aspect,
+          ),
         ),
-      ),
-    );
-    setMessage("Design uploaded. Adjust placement, then Save Changes.");
-    setMode("edit");
+      );
+      setMessage("Design uploaded. Adjust placement, then Save Changes.");
+      setMode("edit");
+    } catch {
+      setError("Upload failed. Check your connection and try again.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   function removeDesign() {
