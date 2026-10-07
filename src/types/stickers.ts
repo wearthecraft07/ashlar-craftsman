@@ -9,6 +9,7 @@ export type StickerCategoryId =
 
 export type StickerPackId =
   | "lodge-life"
+  | "collectible-series"
   | "masonic-humor"
   | "degree-journey"
   | "holidays"
@@ -35,7 +36,12 @@ export type StickerPoseId =
   | "holdingGavel"
   | "holdingApron"
   | "holdingWorkingTool"
-  | "prayingOrReflective";
+  | "prayingOrReflective"
+  | "handOverHeart"
+  | "armsCrossed"
+  | "leaningIn"
+  | "lookingBackWave"
+  | "handshake";
 
 export type StickerExpressionId =
   | "neutral"
@@ -50,7 +56,9 @@ export type StickerExpressionId =
   | "excited"
   | "sleepy"
   | "wink"
-  | "peaceful";
+  | "peaceful"
+  | "concerned"
+  | "confident";
 
 export type StickerPropId =
   | "squareAndCompasses"
@@ -69,7 +77,14 @@ export type StickerPropId =
   | "travelBag"
   | "sun"
   | "moon"
-  | "spark";
+  | "spark"
+  | "backpack"
+  | "blueprint"
+  | "magnifier"
+  | "lantern"
+  | "handshakePartner"
+  | "tinySquare"
+  | "tinyCompass";
 
 export type StickerBackgroundId =
   | "transparent"
@@ -78,9 +93,29 @@ export type StickerBackgroundId =
   | "lodge"
   | "parchment"
   | "goldRing"
-  | "journey";
+  | "journey"
+  | "sunRays"
+  | "lodgeSilhouette"
+  | "goldLevelLine"
+  | "neonRing"
+  | "compassRose"
+  | "squareCompassMotif"
+  | "interlockingForms"
+  | "plumbLine"
+  | "blueprintGrid"
+  | "draftingBoard"
+  | "tableSetting"
+  | "ascendingSteps"
+  | "arches"
+  | "starburstEmblem"
+  | "mapPins"
+  | "checkerboard"
+  | "parallelLines"
+  | "radiantBeam"
+  | "speechBubble"
+  | "moonlitLodge";
 
-export type StickerTextStyle = "banner" | "badge" | "soft";
+export type StickerTextStyle = "banner" | "badge" | "soft" | "collectible";
 
 export type StickerComposition = {
   pose: StickerPoseId;
@@ -94,6 +129,8 @@ export type StickerComposition = {
     apron: string;
     tool: string;
     mouth: string;
+    clothing: string;
+    clothingColor: string;
   }>;
 };
 
@@ -104,6 +141,7 @@ export type StickerDefinition = {
   pack: StickerPackId;
   composition: StickerComposition;
   featured?: boolean;
+  order?: number;
 };
 
 export type StickerPack = {

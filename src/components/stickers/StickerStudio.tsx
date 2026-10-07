@@ -144,18 +144,18 @@ export function StickerStudio() {
               Craft Your Stickers
             </p>
             <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
-              Your character. Your journey. Your expressions.
+              Your character. Twenty collectible lodge stickers.
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--ivory)]/85 sm:text-base">
-              These are{" "}
+              A premium series featuring{" "}
               <span className="text-[var(--gold)]">
                 {ready ? avatarName : "your character"}
               </span>
-              &apos;s Masonic stickers — the same character you crafted, in poses
-              built for lodge chats and the journey between degrees.
+              — the same craftsman you approved, composed as collectible
+              lodge cards.
             </p>
             <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-[var(--gold)]/80">
-              Pack · {STICKER_PACKS[0]?.name ?? "Lodge Life"}
+              Pack · {STICKER_PACKS[0]?.name ?? "Collectible Series"} · 20 cards
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button href="/avatar" variant="gold" size="sm">

@@ -62,12 +62,14 @@ export function StickerProp({ id }: { id: StickerPropId }) {
         </g>
       );
     case "squareAndCompasses":
+      // Far top-right card ornament. Must stay outside the head/face bbox
+      // (approx. x 100–260, y 30–140 in the 360 sticker viewBox).
       return (
-        <g transform="translate(180 52)">
-          <path d="M0 -18 L-22 22 L22 22 Z" fill="none" stroke={GOLD} strokeWidth="3.5" strokeLinejoin="round" />
-          <path d="M-16 8 H16" stroke={GOLD} strokeWidth="3" />
-          <circle cx="0" cy="4" r="7" fill="none" stroke={GOLD} strokeWidth="2.5" />
-          <text x="0" y="8" textAnchor="middle" fill={GOLD} fontSize="10" fontWeight="700" fontFamily="Georgia, serif">
+        <g transform="translate(304 38)" opacity="0.88">
+          <path d="M0 -12 L-14 14 L14 14 Z" fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M-10 5 H10" stroke={GOLD} strokeWidth="2" />
+          <circle cx="0" cy="2" r="4.5" fill="none" stroke={GOLD} strokeWidth="1.75" />
+          <text x="0" y="5" textAnchor="middle" fill={GOLD} fontSize="7" fontWeight="700" fontFamily="Georgia, serif">
             G
           </text>
         </g>
@@ -154,6 +156,70 @@ export function StickerProp({ id }: { id: StickerPropId }) {
           <rect x="4" y="8" width="44" height="34" rx="4" fill="#6B4423" stroke={LINE} strokeWidth="2.5" />
           <path d="M4 18 H48" stroke={GOLD} strokeWidth="2" />
           <circle cx="26" cy="8" r="8" fill="none" stroke={LINE} strokeWidth="2.5" />
+        </g>
+      );
+    case "backpack":
+      return (
+        <g transform="translate(248 200)">
+          <rect x="0" y="10" width="36" height="48" rx="8" fill="#3D2A1A" stroke={LINE} strokeWidth="2.5" />
+          <rect x="6" y="18" width="24" height="18" rx="3" fill="#5A3C24" stroke={LINE} strokeWidth="1.5" />
+          <path d="M8 10 V0 H28 V10" fill="none" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="18" cy="48" r="3" fill={GOLD} />
+        </g>
+      );
+    case "blueprint":
+      return (
+        <g transform="translate(250 255)">
+          <rect x="0" y="8" width="14" height="42" rx="2" fill="#DCE8F5" stroke={LINE} strokeWidth="2" transform="rotate(-18 7 29)" />
+          <rect x="4" y="4" width="14" height="42" rx="2" fill="#EEF4FA" stroke={LINE} strokeWidth="2" transform="rotate(8 11 25)" />
+          <path d="M8 16 H16 M8 24 H14" stroke="#1E3A5F" strokeWidth="1.2" opacity="0.55" transform="rotate(8 11 25)" />
+        </g>
+      );
+    case "magnifier":
+      return (
+        <g transform="translate(255 230)">
+          <circle cx="14" cy="14" r="14" fill="none" stroke={LINE} strokeWidth="3.5" />
+          <circle cx="14" cy="14" r="10" fill="#C8D9EA" opacity="0.35" />
+          <path d="M24 24 L40 42" stroke="#6B4423" strokeWidth="5" strokeLinecap="round" />
+        </g>
+      );
+    case "lantern":
+      return (
+        <g transform="translate(258 240)">
+          <defs>
+            <radialGradient id="lantern-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#F4D078" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#F4D078" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="16" cy="28" r="28" fill="url(#lantern-glow)" />
+          <rect x="6" y="14" width="20" height="28" rx="4" fill="#1E3A5F" stroke={LINE} strokeWidth="2" />
+          <rect x="9" y="18" width="14" height="16" rx="2" fill="#F4D078" opacity="0.9" />
+          <path d="M16 4 V14" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M8 4 H24" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" />
+        </g>
+      );
+    case "handshakePartner":
+      return (
+        <g transform="translate(248 210)" opacity="0.55">
+          <ellipse cx="22" cy="18" rx="16" ry="18" fill="#2A3548" />
+          <path d="M6 40 Q22 28 38 40 L38 78 L6 78 Z" fill="#2A3548" />
+          <path d="M-8 58 Q10 50 28 62" fill="none" stroke="#C9A227" strokeWidth="4" strokeLinecap="round" />
+        </g>
+      );
+    case "tinySquare":
+      return (
+        <g transform="translate(48 250)">
+          <path d="M0 8 H36 V44" fill="none" stroke={GOLD} strokeWidth="4" strokeLinecap="square" />
+          <path d="M0 8 V0" stroke="#6B4423" strokeWidth="3" />
+        </g>
+      );
+    case "tinyCompass":
+      return (
+        <g transform="translate(280 248)">
+          <path d="M16 4 L4 44" stroke={GOLD} strokeWidth="3" strokeLinecap="round" />
+          <path d="M16 4 L28 44" stroke={GOLD} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="16" cy="4" r="3.5" fill={NAVY} stroke={LINE} strokeWidth="1.5" />
         </g>
       );
     default:

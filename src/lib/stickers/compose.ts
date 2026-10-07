@@ -8,6 +8,16 @@ import {
 /**
  * Apply sticker composition onto the user's AvatarConfig.
  * Never replaces identity fields (skin, hair, clothing, etc.).
+ *
+ * Important: production apron overlays (`/apron/ea|fc|mm.webp`) are
+ * full-frame centered emblems. When composed as avatar layers they paint
+ * over the craftsman's face. Character plates already bake apron geometry
+ * (including Square & Compass on the apron), so stickers always use
+ * `apron: "plain"` — keep plate apron, skip the overlay layer.
+ *
+ * Stickers also force `beard: "none"`. Beard overlays are misaligned in
+ * sticker card crops; Avatar Studio / production library keep the user's
+ * beard selection unchanged.
  */
 export function composeAvatarConfig(
   base: AvatarConfig,
@@ -18,8 +28,6 @@ export function composeAvatarConfig(
     STICKER_EXPRESSION_TO_AVATAR[composition.expression];
 
   const toolFromPose = toolForPose(composition.pose);
-  const apronFromPose =
-    composition.pose === "holdingApron" ? base.apron || "mm" : undefined;
 
   return {
     ...base,
@@ -27,10 +35,11 @@ export function composeAvatarConfig(
     expression: expressionPatch.expression,
     mouth: expressionPatch.mouth ?? base.mouth,
     tool: composition.avatarOverrides?.tool ?? toolFromPose ?? base.tool,
-    apron:
-      composition.avatarOverrides?.apron ??
-      apronFromPose ??
-      base.apron,
+    apron: "plain",
+    beard: "none",
+    clothing: composition.avatarOverrides?.clothing ?? base.clothing,
+    clothingColor:
+      composition.avatarOverrides?.clothingColor ?? base.clothingColor,
     ...(composition.avatarOverrides?.mouth
       ? { mouth: composition.avatarOverrides.mouth }
       : {}),

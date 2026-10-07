@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -18,9 +18,14 @@ import {
   DEFAULT_AVATAR,
 } from "@/avatar/options";
 import { Button } from "@/components/ui/Button";
+import { TshirtBodySvg } from "@/components/product/TshirtMockup";
 import { SHIRT_COLORS } from "@/data/products";
 import type { StudioCategory } from "@/lib/avatar/catalog";
 import { useCartStore } from "@/lib/cart-store";
+import {
+  DEFAULT_PRINT_AREA,
+  printAreaStyle,
+} from "@/lib/print/layout";
 import { saveActiveStickerAvatar } from "@/lib/stickers/storage";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig, SavedAvatar } from "@/types";
@@ -167,16 +172,6 @@ export function AvatarStudio({
       window.removeEventListener("resize", update);
     };
   }, [category, options.length]);
-
-  const previewConfig = useMemo(
-    () => ({
-      ...config,
-      clothingColor:
-        SHIRT_COLORS.find((c) => c.hex === shirtColor)?.id ??
-        config.clothingColor,
-    }),
-    [config, shirtColor],
-  );
 
   function update<K extends keyof AvatarConfig>(key: K, value: AvatarConfig[K]) {
     setConfig((prev) => ({ ...prev, [key]: value }));
@@ -437,19 +432,26 @@ export function AvatarStudio({
               <p className="text-xs uppercase tracking-[0.2em] text-[var(--gold)]">
                 Live garment mockup
               </p>
-              <div className="mx-auto mt-4 max-w-[220px]">
-                <svg viewBox="0 0 320 380" className="w-full">
-                  <path
-                    d="M60 95 L110 70 L140 95 L180 95 L210 70 L260 95 L245 140 L230 135 L230 350 L90 350 L90 135 L75 140 Z"
-                    fill={shirtColor}
-                    stroke="#111"
-                    strokeWidth="4"
-                    strokeLinejoin="round"
-                  />
-                  <g transform="translate(100,118) scale(0.43)">
-                    <AvatarCanvas config={previewConfig} decorative />
-                  </g>
-                </svg>
+              {/*
+                Same AvatarCanvas + config as the main preview, placed on the
+                shared photographic tee (`TshirtBodySvg` → /mockups/tshirt-front.png)
+                inside DEFAULT_PRINT_AREA (chest print-safe zone).
+              */}
+              <div className="relative mx-auto mt-4 aspect-[3/4] w-full max-w-[220px]">
+                <div className="absolute inset-0 overflow-hidden">
+                  <TshirtBodySvg shirtColor={shirtColor} fillContainer />
+                  <div
+                    className="pointer-events-none absolute z-20 flex items-center justify-center overflow-hidden"
+                    style={printAreaStyle(DEFAULT_PRINT_AREA)}
+                  >
+                    <AvatarCanvas
+                      config={config}
+                      decorative
+                      showBackground={false}
+                      className="h-full max-h-full w-auto max-w-full"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
