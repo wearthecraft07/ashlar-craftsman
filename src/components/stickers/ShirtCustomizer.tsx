@@ -1,12 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { TshirtBodySvg } from "@/components/product/TshirtMockup";
 import { StickerRenderer } from "@/components/stickers/StickerRenderer";
 import { useCartStore } from "@/lib/cart-store";
+import {
+  DEFAULT_PRINT_AREA,
+  clamp,
+  designBoxStyle,
+  type PrintLayout,
+} from "@/lib/print/layout";
 import {
   DESIGN_PLACEMENTS,
   DESIGN_SIZES,
@@ -41,6 +55,8 @@ export function ShirtCustomizer() {
   const [garmentSize, setGarmentSize] = useState("M");
   const [placement, setPlacement] =
     useState<DesignPlacementId>("center-chest");
+  /** Bumps when a placement chip is clicked so presets re-apply even if id is unchanged. */
+  const [placementTick, setPlacementTick] = useState(0);
   const [designSize, setDesignSize] = useState<DesignSizeId>("medium");
   const [locked, setLocked] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -205,12 +221,14 @@ export function ShirtCustomizer() {
             <ShirtMockup
               colorHex={color?.hex ?? "#FFFFFF"}
               placement={placement}
+              placementTick={placementTick}
               designSize={designSize}
               artworkUrl={previewUrl}
               sticker={sticker}
               avatarConfig={draft.avatarConfig}
               stageRef={stageRef}
               showLive={!previewUrl}
+              interactive={!locked}
             />
           </div>
           <p className="mt-4 text-center text-xs text-[var(--walnut)]/80">
@@ -281,6 +299,7 @@ export function ShirtCustomizer() {
                   active={placement === p.id}
                   onClick={() => {
                     setPlacement(p.id);
+                    setPlacementTick((n) => n + 1);
                     setLocked(false);
                   }}
                 >
@@ -427,89 +446,264 @@ function Chip({
   );
 }
 
+/** Design box in print-area fractions (same space as `@/lib/print/layout`). */
+type DesignBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+/** Map apparel SVG preset (320×380) into DEFAULT_PRINT_AREA fractions. */
+function presetToPrintBox(
+  placement: DesignPlacementId,
+  designSize: DesignSizeId,
+): DesignBox {
+  const svg = placementLayout(placement, designSize);
+  const pa = DEFAULT_PRINT_AREA;
+  const absLeft = svg.x / 320;
+  const absTop = svg.y / 380;
+  const absW = svg.width / 320;
+  const absH = svg.height / 380;
+  return constrainDesignBox({
+    x: (absLeft - pa.x) / pa.width,
+    y: (absTop - pa.y) / pa.height,
+    width: absW / pa.width,
+    height: absH / pa.height,
+  });
+}
+
+function sizeOnlyBox(designSize: DesignSizeId, previous: DesignBox): DesignBox {
+  const next = presetToPrintBox("center-chest", designSize);
+  const cx = previous.x + previous.width / 2;
+  const cy = previous.y + previous.height / 2;
+  return constrainDesignBox({
+    x: cx - next.width / 2,
+    y: cy - next.height / 2,
+    width: next.width,
+    height: next.height,
+  });
+}
+
+function constrainDesignBox(box: DesignBox): DesignBox {
+  const width = clamp(box.width, 0.08, 1);
+  const height = clamp(box.height, 0.08, 1);
+  return {
+    width,
+    height,
+    x: clamp(box.x, 0, Math.max(0, 1 - width)),
+    y: clamp(box.y, 0, Math.max(0, 1 - height)),
+  };
+}
+
+function toPrintLayout(box: DesignBox): PrintLayout {
+  return {
+    designUrl: null,
+    mockupUrl: null,
+    x: box.x,
+    y: box.y,
+    width: box.width,
+    height: box.height,
+    rotation: 0,
+    printArea: { ...DEFAULT_PRINT_AREA },
+    designAspect: 1,
+  };
+}
+
 function ShirtMockup({
   colorHex,
   placement,
+  placementTick,
   designSize,
   artworkUrl,
   sticker,
   avatarConfig,
   stageRef,
   showLive,
+  interactive,
 }: {
   colorHex: string;
   placement: DesignPlacementId;
+  placementTick: number;
   designSize: DesignSizeId;
   artworkUrl: string | null;
   sticker: StickerDefinition;
   avatarConfig: import("@/types").AvatarConfig;
   stageRef: React.RefObject<HTMLDivElement | null>;
   showLive: boolean;
+  interactive: boolean;
 }) {
-  const layout = placementLayout(placement, designSize);
+  const mockupRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<DesignBox>(() =>
+    presetToPrintBox(placement, designSize),
+  );
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    origin: DesignBox;
+  } | null>(null);
+  const prevPlacementTick = useRef(placementTick);
+  const prevDesignSize = useRef(designSize);
+
+  useEffect(() => {
+    if (prevPlacementTick.current !== placementTick) {
+      setBox(presetToPrintBox(placement, designSize));
+      prevPlacementTick.current = placementTick;
+      prevDesignSize.current = designSize;
+      return;
+    }
+    if (prevDesignSize.current !== designSize) {
+      setBox((prev) => sizeOnlyBox(designSize, prev));
+      prevDesignSize.current = designSize;
+    }
+  }, [placement, placementTick, designSize]);
+
+  const clientToPrintDelta = useCallback((dxPx: number, dyPx: number) => {
+    const el = mockupRef.current;
+    if (!el) return { dx: 0, dy: 0 };
+    const rect = el.getBoundingClientRect();
+    const pa = DEFAULT_PRINT_AREA;
+    const printW = rect.width * pa.width;
+    const printH = rect.height * pa.height;
+    return {
+      dx: printW > 0 ? dxPx / printW : 0,
+      dy: printH > 0 ? dyPx / printH : 0,
+    };
+  }, []);
+
+  const applyDragDelta = useCallback(
+    (clientX: number, clientY: number) => {
+      const state = dragRef.current;
+      if (!state) return;
+      const { dx, dy } = clientToPrintDelta(
+        clientX - state.startX,
+        clientY - state.startY,
+      );
+      setBox(
+        constrainDesignBox({
+          ...state.origin,
+          x: state.origin.x + dx,
+          y: state.origin.y + dy,
+        }),
+      );
+    },
+    [clientToPrintDelta],
+  );
+
+  function endDrag(event: ReactPointerEvent) {
+    if (!dragRef.current) return;
+    dragRef.current = null;
+    setDragging(false);
+    try {
+      (event.currentTarget as HTMLElement).releasePointerCapture?.(
+        event.pointerId,
+      );
+    } catch {
+      /* already released */
+    }
+  }
+
+  function startDrag(event: ReactPointerEvent) {
+    if (!interactive) return;
+    event.preventDefault();
+    event.stopPropagation();
+    dragRef.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      origin: box,
+    };
+    setDragging(true);
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+  }
+
+  // Window-level listeners so drag stays smooth even if capture is lost.
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (event: PointerEvent) => {
+      applyDragDelta(event.clientX, event.clientY);
+    };
+    const onUp = () => {
+      dragRef.current = null;
+      setDragging(false);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, [dragging, applyDragDelta]);
+
   const isBack = placement === "upper-back" || placement === "full-back";
+  const artStyle = designBoxStyle(toPrintLayout(box));
 
   return (
-    <div className="relative">
-      <svg viewBox="0 0 320 380" className="h-auto w-full">
-        <path
-          d="M86 78 C110 54 140 48 160 48 C180 48 210 54 234 78 L268 108 L244 128 L228 114 L228 340 C228 352 218 360 204 360 L116 360 C102 360 92 352 92 340 L92 114 L76 128 L52 108 Z"
-          fill={colorHex}
-          stroke="#1A120C"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M116 78 C132 92 148 98 160 98 C172 98 188 92 204 78"
-          fill="none"
-          stroke="#1A120C"
-          strokeWidth="2.5"
-          opacity="0.35"
-        />
+    <div
+      ref={mockupRef}
+      className="relative mx-auto aspect-[3/4] w-full select-none"
+    >
+      <div className="absolute inset-0 overflow-hidden">
+        <TshirtBodySvg shirtColor={colorHex} fillContainer />
+
         {isBack ? (
-          <text
-            x="160"
-            y="70"
-            textAnchor="middle"
-            fill="#C9A227"
-            fontSize="11"
-            fontWeight="700"
-            letterSpacing="0.2em"
-            opacity="0.7"
+          <p
+            className="pointer-events-none absolute left-1/2 top-[6%] z-30 -translate-x-1/2 text-[11px] font-bold tracking-[0.2em] text-[var(--gold)] opacity-70"
+            aria-hidden
           >
             BACK
-          </text>
+          </p>
         ) : null}
-        {artworkUrl ? (
-          <image
-            href={artworkUrl}
-            x={layout.x}
-            y={layout.y}
-            width={layout.width}
-            height={layout.height}
-            preserveAspectRatio="xMidYMid meet"
-          />
-        ) : null}
-      </svg>
 
-      {showLive && !artworkUrl ? (
-        <div
-          className="absolute overflow-hidden"
-          style={{
-            left: `${(layout.x / 320) * 100}%`,
-            top: `${(layout.y / 380) * 100}%`,
-            width: `${(layout.width / 320) * 100}%`,
-            height: `${(layout.height / 380) * 100}%`,
-          }}
-        >
-          <StickerRenderer
-            sticker={sticker}
-            config={avatarConfig}
-            showOutline
-            className="h-full w-full"
-          />
-        </div>
-      ) : null}
+        {artworkUrl ? (
+          <div
+            role={interactive ? "button" : undefined}
+            aria-label={interactive ? "Move sticker on shirt" : undefined}
+            className={cn(
+              "absolute z-20 touch-none overflow-hidden",
+              interactive && (dragging ? "cursor-grabbing" : "cursor-grab"),
+            )}
+            style={artStyle}
+            onPointerDown={startDrag}
+            onPointerMove={(event) => applyDragDelta(event.clientX, event.clientY)}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={artworkUrl}
+              alt=""
+              draggable={false}
+              className="pointer-events-none h-full w-full select-none object-contain"
+            />
+          </div>
+        ) : null}
+
+        {showLive && !artworkUrl ? (
+          <div
+            role={interactive ? "button" : undefined}
+            aria-label={interactive ? "Move sticker on shirt" : undefined}
+            className={cn(
+              "absolute z-20 touch-none overflow-hidden",
+              interactive && (dragging ? "cursor-grabbing" : "cursor-grab"),
+            )}
+            style={artStyle}
+            onPointerDown={startDrag}
+            onPointerMove={(event) => applyDragDelta(event.clientX, event.clientY)}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            <StickerRenderer
+              sticker={sticker}
+              config={avatarConfig}
+              showOutline
+              className="pointer-events-none h-full w-full"
+            />
+          </div>
+        ) : null}
+      </div>
 
       {/* Always-mounted stage for print/preview generation */}
       <div className="pointer-events-none absolute -left-[9999px] top-0 h-[360px] w-[360px] overflow-hidden opacity-0">
