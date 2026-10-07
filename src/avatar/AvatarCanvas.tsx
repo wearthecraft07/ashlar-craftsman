@@ -195,6 +195,15 @@ export const AvatarCanvas = memo(function AvatarCanvas({
           <stop offset="0%" stopColor={hair} />
           <stop offset="100%" stopColor={hairShade} />
         </linearGradient>
+        <pattern
+          id={`stubble-${uid}`}
+          width="2.5"
+          height="2.5"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx="0.75" cy="0.85" r="0.95" fill={hairShade} />
+          <circle cx="1.95" cy="1.9" r="0.8" fill={hair} />
+        </pattern>
         <linearGradient id={`cloth-${uid}`} x1="0.25" y1="0" x2="0.8" y2="1">
           <stop offset="0%" stopColor={cloth} />
           <stop offset="100%" stopColor={clothShade} />
@@ -522,21 +531,38 @@ export const AvatarCanvas = memo(function AvatarCanvas({
 
           {/* Beard */}
           {config.beard !== "none" && (
-            <g
-              fill={`url(#hair-${uid})`}
-              stroke={LINE}
-              strokeWidth="3.5"
-              strokeLinejoin="round"
-              opacity={config.beard === "stubble" ? 0.5 : 1}
-            >
+            <g stroke={LINE} strokeWidth="3.5" strokeLinejoin="round">
               {config.beard === "mustache" && (
-                <path d="M116 136 Q140 148 164 136 Q140 142 116 136 Z" />
+                <path
+                  d="M116 136 Q140 148 164 136 Q140 142 116 136 Z"
+                  fill={`url(#hair-${uid})`}
+                />
               )}
               {config.beard === "goatee" && (
-                <path d="M130 152 Q140 178 150 152 Q140 160 130 152 Z" />
+                <path
+                  d="M129 168 C134 177 137 181 140 183 C143 181 146 177 151 168 C144 174 136 174 129 168 Z"
+                  fill={`url(#hair-${uid})`}
+                />
               )}
-              {(config.beard === "full" || config.beard === "stubble") && (
-                <path d="M92 132 C86 168 108 196 140 200 C172 196 194 168 188 132 C172 158 156 164 140 164 C124 164 108 158 92 132 Z" />
+              {config.beard === "full" && (
+                <path
+                  d="M92 132 C86 168 108 196 140 200 C172 196 194 168 188 132 C172 158 156 164 140 164 C124 164 108 158 92 132 Z"
+                  fill={`url(#hair-${uid})`}
+                />
+              )}
+              {config.beard === "stubble" && (
+                <>
+                  <path
+                    d="M92 132 C86 168 108 196 140 200 C172 196 194 168 188 132 C172 158 156 164 140 164 C124 164 108 158 92 132 Z"
+                    fill={hairShade}
+                    opacity="0.4"
+                    stroke="none"
+                  />
+                  <path
+                    d="M92 132 C86 168 108 196 140 200 C172 196 194 168 188 132 C172 158 156 164 140 164 C124 164 108 158 92 132 Z"
+                    fill={`url(#stubble-${uid})`}
+                  />
+                </>
               )}
             </g>
           )}
