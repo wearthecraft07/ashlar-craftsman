@@ -26,6 +26,10 @@ import {
   DEFAULT_PRINT_AREA,
   printAreaStyle,
 } from "@/lib/print/layout";
+import {
+  downloadSvgElement,
+  SvgImageEmbedError,
+} from "@/lib/avatar/exportSvg";
 import { saveActiveStickerAvatar } from "@/lib/stickers/storage";
 import { cn } from "@/lib/utils";
 import type { AvatarConfig, SavedAvatar } from "@/types";
@@ -255,70 +259,18 @@ export function AvatarStudio({
     if (!svg) return;
 
     setStatus("Preparing download…");
-
-    const clone = svg.cloneNode(true) as SVGElement;
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
-    // Local SVG files can't load relative /logo.png paths — embed as data URLs.
-    const images = Array.from(clone.querySelectorAll("image"));
-    await Promise.all(
-      images.map(async (image) => {
-        const el = image as SVGImageElement;
-        const href =
-          el.getAttribute("href") ||
-          el.getAttribute("xlink:href") ||
-          el.getAttributeNS("http://www.w3.org/1999/xlink", "href") ||
-          el.href?.baseVal ||
-          "";
-        if (!href || href.startsWith("data:")) return;
-        try {
-          const src = href.startsWith("http")
-            ? href
-            : new URL(href, window.location.origin).toString();
-          const res = await fetch(src, { mode: "cors", credentials: "omit" });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const blob = await res.blob();
-          const dataUrl = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result));
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(blob);
-          });
-          el.removeAttribute("href");
-          el.removeAttributeNS("http://www.w3.org/1999/xlink", "href");
-          el.setAttribute("href", dataUrl);
-          el.setAttributeNS("http://www.w3.org/1999/xlink", "href", dataUrl);
-        } catch {
-          // Fall back to absolute URL so the file still works online.
-          try {
-            const absolute = href.startsWith("http")
-              ? href
-              : new URL(href, window.location.origin).toString();
-            el.setAttribute("href", absolute);
-            el.setAttributeNS(
-              "http://www.w3.org/1999/xlink",
-              "href",
-              absolute,
-            );
-          } catch {
-            // Keep original.
-          }
-        }
-      }),
-    );
-
-    const blob = new Blob(
-      [`<?xml version="1.0" encoding="UTF-8"?>${clone.outerHTML}`],
-      { type: "image/svg+xml;charset=utf-8" },
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${slugSafe(name)}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setStatus("Preview downloaded.");
+    try {
+      // Clone + embed happens inside downloadSvgElement and must finish
+      // before the Blob/download URL is created (self-contained SVG).
+      await downloadSvgElement(svg, `${slugSafe(name)}.svg`);
+      setStatus("Preview downloaded.");
+    } catch (err) {
+      if (err instanceof SvgImageEmbedError) {
+        setStatus(`Download failed — could not embed ${err.asset}`);
+      } else {
+        setStatus("Download failed.");
+      }
+    }
   }
 
   function addToCart() {
