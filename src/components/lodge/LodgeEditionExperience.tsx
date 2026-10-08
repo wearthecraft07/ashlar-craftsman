@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { LodgeConceptPreview } from "@/components/lodge/LodgeConceptPreview";
+import { LodgeEmblemUploadField } from "@/components/lodge/LodgeEmblemUploadField";
 import { ProductVisual } from "@/components/product/ProductVisual";
 import {
   LODGE_EMBLEM_OPTIONS,
@@ -14,6 +15,7 @@ import {
   type LodgeQuantityId,
   type LodgeStyleId,
 } from "@/data/lodge-edition";
+import { validateEmblemFile } from "@/lib/lodge/emblem-upload";
 import { formatCurrency, cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
@@ -48,9 +50,63 @@ export function LodgeEditionExperience({ products }: Props) {
   const [notes, setNotes] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
+  /** Client-side Concept Preview emblem only (not persisted to the server). */
+  const emblemObjectUrlRef = useRef<string | null>(null);
+  const [emblemUrl, setEmblemUrl] = useState<string | null>(null);
+  const [emblemFileName, setEmblemFileName] = useState<string | null>(null);
+  const [emblemError, setEmblemError] = useState<string | null>(null);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  const clearEmblemAsset = useCallback(() => {
+    if (emblemObjectUrlRef.current) {
+      URL.revokeObjectURL(emblemObjectUrlRef.current);
+      emblemObjectUrlRef.current = null;
+    }
+    setEmblemUrl(null);
+    setEmblemFileName(null);
+    setEmblemError(null);
+  }, []);
+
+  const applyEmblemFile = useCallback(
+    (file: File) => {
+      const validationError = validateEmblemFile(file);
+      if (validationError) {
+        setEmblemError(validationError);
+        return;
+      }
+      if (emblemObjectUrlRef.current) {
+        URL.revokeObjectURL(emblemObjectUrlRef.current);
+      }
+      const url = URL.createObjectURL(file);
+      emblemObjectUrlRef.current = url;
+      setEmblemUrl(url);
+      setEmblemFileName(file.name);
+      setEmblemError(null);
+    },
+    [],
+  );
+
+  const handleEmblemLoadError = useCallback(() => {
+    clearEmblemAsset();
+    setEmblemError("Could not read that emblem file. Try a PNG or SVG.");
+  }, [clearEmblemAsset]);
+
+  useEffect(() => {
+    if (emblem !== "have") {
+      clearEmblemAsset();
+    }
+  }, [emblem, clearEmblemAsset]);
+
+  useEffect(() => {
+    return () => {
+      if (emblemObjectUrlRef.current) {
+        URL.revokeObjectURL(emblemObjectUrlRef.current);
+      }
+    };
+  }, []);
 
   const product = useMemo(
     () => products.find((p) => p.id === productId) ?? products[0] ?? null,
@@ -392,8 +448,9 @@ export function LodgeEditionExperience({ products }: Props) {
               Lodge emblem
             </h2>
             <p className="mt-2 text-sm text-[var(--walnut)]">
-              Uploads are not required in this phase. Tell us your intent — we
-              coordinate approved artwork separately.
+              Tell us your intent. If you have approved artwork, you can upload
+              a Concept Preview emblem — we still coordinate final artwork
+              separately.
             </p>
             <ul className="mt-6 space-y-3">
               {LODGE_EMBLEM_OPTIONS.map((opt) => (
@@ -419,6 +476,17 @@ export function LodgeEditionExperience({ products }: Props) {
                 </li>
               ))}
             </ul>
+
+            {emblem === "have" ? (
+              <div className="mt-4 rounded-2xl border border-[var(--stone)]/50 bg-[var(--panel)] p-4">
+                <LodgeEmblemUploadField
+                  fileName={emblemFileName}
+                  error={emblemError}
+                  onFile={applyEmblemFile}
+                  onRemove={clearEmblemAsset}
+                />
+              </div>
+            ) : null}
           </section>
 
           {/* Quantity + continue */}
@@ -480,6 +548,13 @@ export function LodgeEditionExperience({ products }: Props) {
               lodgeNumber={lodgeNumber}
               city={city}
               yearEstablished={yearEstablished}
+              emblemIntent={emblem}
+              emblemUrl={emblem === "have" ? emblemUrl : null}
+              emblemFileName={emblem === "have" ? emblemFileName : null}
+              emblemError={emblem === "have" ? emblemError : null}
+              onEmblemFile={applyEmblemFile}
+              onEmblemRemove={clearEmblemAsset}
+              onEmblemLoadError={handleEmblemLoadError}
             />
           </div>
           <div className="mt-4 rounded-2xl border border-[var(--stone)]/50 bg-[var(--panel)] p-4 text-sm text-[var(--walnut)]">

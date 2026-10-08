@@ -8,8 +8,10 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { LodgeEmblemUploadField } from "@/components/lodge/LodgeEmblemUploadField";
 import { TshirtBodySvg } from "@/components/product/TshirtMockup";
 import { ProductStage } from "@/components/product/ProductVisual";
+import type { LodgeEmblemId } from "@/data/lodge-edition";
 import {
   DEFAULT_PRINT_AREA,
   clamp,
@@ -29,6 +31,14 @@ const SIZE_MAX = 1;
 const SIZE_DEFAULT = 0.72;
 const NUDGE = 0.05;
 
+/** Emblem size as a fraction of print-area width. */
+const EMBLEM_SIZE_MIN = 0.16;
+const EMBLEM_SIZE_MAX = 0.55;
+const EMBLEM_SIZE_DEFAULT = 0.28;
+/** Left-chest style default inside the printable area. */
+const EMBLEM_DEFAULT_X = 0.02;
+const EMBLEM_DEFAULT_Y = 0.04;
+
 const TEXT_COLORS = [
   { id: "white", name: "White", hex: "#FFFFFF" },
   { id: "black", name: "Black", hex: "#1A1A1A" },
@@ -38,12 +48,28 @@ const TEXT_COLORS = [
 ] as const;
 
 type TextColorId = (typeof TEXT_COLORS)[number]["id"];
+type DragTarget = "design" | "emblem";
 
 type Props = {
   lodgeName: string;
   lodgeNumber: string;
   city: string;
   yearEstablished: string;
+  emblemIntent: LodgeEmblemId;
+  emblemUrl: string | null;
+  emblemFileName: string | null;
+  emblemError: string | null;
+  onEmblemFile: (file: File) => void;
+  onEmblemRemove: () => void;
+  onEmblemLoadError?: () => void;
+};
+
+type DragState = {
+  target: DragTarget;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
 };
 
 function luminance(hex: string) {
@@ -74,29 +100,46 @@ function ensureReadableText(
   return defaultTextForShirt(shirtHex);
 }
 
-function layoutFromState(x: number, y: number, width: number): PrintLayout {
+function layoutFromState(
+  x: number,
+  y: number,
+  width: number,
+  aspect: number,
+): PrintLayout {
   return constrainLayout({
     designUrl: null,
     mockupUrl: null,
     x,
     y,
     width,
-    height: heightFromWidth(width, DESIGN_ASPECT, DEFAULT_PRINT_AREA),
+    height: heightFromWidth(width, aspect, DEFAULT_PRINT_AREA),
     rotation: 0,
     printArea: { ...DEFAULT_PRINT_AREA },
-    designAspect: DESIGN_ASPECT,
+    designAspect: aspect,
   });
 }
 
 function resizeKeepingCenter(
   prev: PrintLayout,
   nextWidth: number,
+  aspect: number,
+  sizeMin: number,
+  sizeMax: number,
 ): PrintLayout {
-  const width = clamp(nextWidth, SIZE_MIN, SIZE_MAX);
-  const height = heightFromWidth(width, DESIGN_ASPECT, DEFAULT_PRINT_AREA);
+  const width = clamp(nextWidth, sizeMin, sizeMax);
+  const height = heightFromWidth(width, aspect, DEFAULT_PRINT_AREA);
   const cx = prev.x + prev.width / 2;
   const cy = prev.y + prev.height / 2;
-  return layoutFromState(cx - width / 2, cy - height / 2, width);
+  return layoutFromState(cx - width / 2, cy - height / 2, width, aspect);
+}
+
+function defaultEmblemLayout(aspect: number): PrintLayout {
+  return layoutFromState(
+    EMBLEM_DEFAULT_X,
+    EMBLEM_DEFAULT_Y,
+    EMBLEM_SIZE_DEFAULT,
+    aspect,
+  );
 }
 
 export function LodgeConceptPreview({
@@ -104,21 +147,34 @@ export function LodgeConceptPreview({
   lodgeNumber,
   city,
   yearEstablished,
+  emblemIntent,
+  emblemUrl,
+  emblemFileName,
+  emblemError,
+  onEmblemFile,
+  onEmblemRemove,
+  onEmblemLoadError,
 }: Props) {
   const mockupRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{
-    startX: number;
-    startY: number;
-    originX: number;
-    originY: number;
-  } | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const lastEmblemUrlRef = useRef<string | null>(null);
 
   const [shirtColor, setShirtColor] = useState(TSHIRT_COLORS[0]!.hex);
   const [textColorId, setTextColorId] = useState<TextColorId>("navy");
-  const [dragging, setDragging] = useState(false);
+  const [draggingTarget, setDraggingTarget] = useState<DragTarget | null>(null);
+  const [activeLayer, setActiveLayer] = useState<DragTarget>("design");
+
   const [layout, setLayout] = useState<PrintLayout>(() =>
-    layoutFromState(0.14, 0.08, SIZE_DEFAULT),
+    layoutFromState(0.14, 0.08, SIZE_DEFAULT, DESIGN_ASPECT),
   );
+
+  const [emblemAspect, setEmblemAspect] = useState(1);
+  const [emblemLayout, setEmblemLayout] = useState<PrintLayout>(() =>
+    defaultEmblemLayout(1),
+  );
+
+  const emblemEnabled = emblemIntent === "have";
+  const emblemVisible = emblemEnabled && Boolean(emblemUrl);
 
   const textHex =
     TEXT_COLORS.find((c) => c.id === textColorId)?.hex ?? "#1E2A44";
@@ -138,7 +194,22 @@ export function LodgeConceptPreview({
   }, [yearEstablished, city]);
 
   const boxStyle = designBoxStyle(layout);
+  const emblemBoxStyle = designBoxStyle(emblemLayout);
   const sizePct = Math.round(layout.width * 100);
+  const emblemSizePct = Math.round(emblemLayout.width * 100);
+
+  // Fresh left-chest placement whenever a new emblem source is chosen.
+  useEffect(() => {
+    if (!emblemUrl) {
+      lastEmblemUrlRef.current = null;
+      return;
+    }
+    if (lastEmblemUrlRef.current === emblemUrl) return;
+    lastEmblemUrlRef.current = emblemUrl;
+    setEmblemAspect(1);
+    setEmblemLayout(defaultEmblemLayout(1));
+    setActiveLayer("emblem");
+  }, [emblemUrl]);
 
   const selectShirt = useCallback((hex: string) => {
     setShirtColor(hex);
@@ -153,14 +224,40 @@ export function LodgeConceptPreview({
   );
 
   const setSize = useCallback((nextWidth: number) => {
-    setLayout((prev) => resizeKeepingCenter(prev, nextWidth));
-  }, []);
-
-  const nudge = useCallback((dx: number, dy: number) => {
     setLayout((prev) =>
-      layoutFromState(prev.x + dx, prev.y + dy, prev.width),
+      resizeKeepingCenter(prev, nextWidth, DESIGN_ASPECT, SIZE_MIN, SIZE_MAX),
     );
   }, []);
+
+  const setEmblemSize = useCallback(
+    (nextWidth: number) => {
+      setEmblemLayout((prev) =>
+        resizeKeepingCenter(
+          prev,
+          nextWidth,
+          emblemAspect,
+          EMBLEM_SIZE_MIN,
+          EMBLEM_SIZE_MAX,
+        ),
+      );
+    },
+    [emblemAspect],
+  );
+
+  const nudgeDesign = useCallback((dx: number, dy: number) => {
+    setLayout((prev) =>
+      layoutFromState(prev.x + dx, prev.y + dy, prev.width, DESIGN_ASPECT),
+    );
+  }, []);
+
+  const nudgeEmblem = useCallback(
+    (dx: number, dy: number) => {
+      setEmblemLayout((prev) =>
+        layoutFromState(prev.x + dx, prev.y + dy, prev.width, emblemAspect),
+      );
+    },
+    [emblemAspect],
+  );
 
   const clientToPrintDelta = useCallback((dxPx: number, dyPx: number) => {
     const el = mockupRef.current;
@@ -183,21 +280,33 @@ export function LodgeConceptPreview({
         clientX - state.startX,
         clientY - state.startY,
       );
-      setLayout((prev) =>
-        layoutFromState(
-          state.originX + dx,
-          state.originY + dy,
-          prev.width,
-        ),
-      );
+      if (state.target === "design") {
+        setLayout((prev) =>
+          layoutFromState(
+            state.originX + dx,
+            state.originY + dy,
+            prev.width,
+            DESIGN_ASPECT,
+          ),
+        );
+      } else {
+        setEmblemLayout((prev) =>
+          layoutFromState(
+            state.originX + dx,
+            state.originY + dy,
+            prev.width,
+            emblemAspect,
+          ),
+        );
+      }
     },
-    [clientToPrintDelta],
+    [clientToPrintDelta, emblemAspect],
   );
 
   function endDrag(event: ReactPointerEvent) {
     if (!dragRef.current) return;
     dragRef.current = null;
-    setDragging(false);
+    setDraggingTarget(null);
     try {
       (event.currentTarget as HTMLElement).releasePointerCapture?.(
         event.pointerId,
@@ -207,27 +316,44 @@ export function LodgeConceptPreview({
     }
   }
 
-  function startDrag(event: ReactPointerEvent) {
+  function startDesignDrag(event: ReactPointerEvent) {
     event.preventDefault();
     event.stopPropagation();
+    setActiveLayer("design");
     dragRef.current = {
+      target: "design",
       startX: event.clientX,
       startY: event.clientY,
       originX: layout.x,
       originY: layout.y,
     };
-    setDragging(true);
+    setDraggingTarget("design");
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+  }
+
+  function startEmblemDrag(event: ReactPointerEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    setActiveLayer("emblem");
+    dragRef.current = {
+      target: "emblem",
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: emblemLayout.x,
+      originY: emblemLayout.y,
+    };
+    setDraggingTarget("emblem");
     (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
   }
 
   useEffect(() => {
-    if (!dragging) return;
+    if (!draggingTarget) return;
     const onMove = (event: PointerEvent) => {
       applyDragDelta(event.clientX, event.clientY);
     };
     const onUp = () => {
       dragRef.current = null;
-      setDragging(false);
+      setDraggingTarget(null);
     };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
@@ -237,12 +363,17 @@ export function LodgeConceptPreview({
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
     };
-  }, [dragging, applyDragDelta]);
+  }, [draggingTarget, applyDragDelta]);
 
   const shirtName =
     TSHIRT_COLORS.find((c) => c.hex === shirtColor)?.name ?? "Custom";
   const textName =
     TEXT_COLORS.find((c) => c.id === textColorId)?.name ?? "Navy";
+
+  const controlBtn =
+    "rounded-full border border-[var(--stone)]/60 bg-white px-3 py-2 text-xs font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]";
+  const stepBtn =
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--stone)]/60 bg-white text-lg font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]";
 
   return (
     <div>
@@ -260,29 +391,33 @@ export function LodgeConceptPreview({
                 tabIndex={0}
                 aria-label="Move Lodge Edition design on shirt"
                 className={cn(
-                  "absolute z-20 touch-none overflow-hidden rounded-sm",
-                  dragging ? "cursor-grabbing" : "cursor-grab",
+                  "absolute z-20 touch-none overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--gold)]/80",
+                  draggingTarget === "design"
+                    ? "cursor-grabbing ring-1 ring-[var(--gold)]/70"
+                    : "cursor-grab",
                 )}
                 style={boxStyle}
-                onPointerDown={startDrag}
+                draggable={false}
+                onPointerDown={startDesignDrag}
                 onPointerMove={(event) =>
                   applyDragDelta(event.clientX, event.clientY)
                 }
                 onPointerUp={endDrag}
                 onPointerCancel={endDrag}
+                onFocus={() => setActiveLayer("design")}
                 onKeyDown={(event) => {
                   if (event.key === "ArrowLeft") {
                     event.preventDefault();
-                    nudge(-NUDGE, 0);
+                    nudgeDesign(-NUDGE, 0);
                   } else if (event.key === "ArrowRight") {
                     event.preventDefault();
-                    nudge(NUDGE, 0);
+                    nudgeDesign(NUDGE, 0);
                   } else if (event.key === "ArrowUp") {
                     event.preventDefault();
-                    nudge(0, -NUDGE);
+                    nudgeDesign(0, -NUDGE);
                   } else if (event.key === "ArrowDown") {
                     event.preventDefault();
-                    nudge(0, NUDGE);
+                    nudgeDesign(0, NUDGE);
                   }
                 }}
               >
@@ -312,18 +447,95 @@ export function LodgeConceptPreview({
                   ) : null}
                 </div>
               </div>
+
+              {emblemVisible ? (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Move Lodge emblem on shirt"
+                  className={cn(
+                    "absolute z-30 touch-none overflow-hidden rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--gold)]/80",
+                    draggingTarget === "emblem"
+                      ? "cursor-grabbing ring-1 ring-[var(--gold)]/80"
+                      : "cursor-grab",
+                    activeLayer === "emblem" &&
+                      draggingTarget !== "emblem" &&
+                      "ring-1 ring-[var(--gold)]/55",
+                  )}
+                  style={emblemBoxStyle}
+                  draggable={false}
+                  onPointerDown={startEmblemDrag}
+                  onPointerMove={(event) =>
+                    applyDragDelta(event.clientX, event.clientY)
+                  }
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  onFocus={() => setActiveLayer("emblem")}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowLeft") {
+                      event.preventDefault();
+                      nudgeEmblem(-NUDGE, 0);
+                    } else if (event.key === "ArrowRight") {
+                      event.preventDefault();
+                      nudgeEmblem(NUDGE, 0);
+                    } else if (event.key === "ArrowUp") {
+                      event.preventDefault();
+                      nudgeEmblem(0, -NUDGE);
+                    } else if (event.key === "ArrowDown") {
+                      event.preventDefault();
+                      nudgeEmblem(0, NUDGE);
+                    }
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- object-URL preview; not a static asset */}
+                  <img
+                    src={emblemUrl!}
+                    alt=""
+                    draggable={false}
+                    className="pointer-events-none h-full w-full select-none object-contain"
+                    onLoad={(event) => {
+                      const img = event.currentTarget;
+                      const w = img.naturalWidth;
+                      const h = img.naturalHeight;
+                      if (!w || !h) return;
+                      const nextAspect = w / h;
+                      setEmblemAspect(nextAspect);
+                      setEmblemLayout((prev) =>
+                        resizeKeepingCenter(
+                          prev,
+                          prev.width,
+                          nextAspect,
+                          EMBLEM_SIZE_MIN,
+                          EMBLEM_SIZE_MAX,
+                        ),
+                      );
+                    }}
+                    onError={() => {
+                      onEmblemLoadError?.();
+                    }}
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
       </ProductStage>
 
-      <div className="mt-4 space-y-4 rounded-2xl border border-[var(--stone)]/50 bg-[var(--panel)] p-4">
+      <div className="mt-4 space-y-5 rounded-2xl border border-[var(--stone)]/50 bg-[var(--panel)] p-4">
+        {/* SHIRT */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
-            Shirt color
+            Shirt
+          </p>
+          <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+            Color
           </p>
           <p className="mt-1 text-xs text-[var(--walnut)]/70">{shirtName}</p>
-          <div className="mt-2 flex flex-wrap gap-2" role="listbox" aria-label="Shirt color">
+          <div
+            className="mt-2 flex flex-wrap gap-2"
+            role="listbox"
+            aria-label="Shirt color"
+          >
             {TSHIRT_COLORS.map((color) => {
               const selected = color.hex === shirtColor;
               return (
@@ -348,125 +560,273 @@ export function LodgeConceptPreview({
           </div>
         </div>
 
-        <div>
+        {/* LODGE EDITION */}
+        <div className="space-y-4 border-t border-[var(--stone)]/40 pt-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
-            Text color
+            Lodge Edition
           </p>
-          <p className="mt-1 text-xs text-[var(--walnut)]/70">{textName}</p>
-          <div className="mt-2 flex flex-wrap gap-2" role="listbox" aria-label="Text color">
-            {TEXT_COLORS.map((color) => {
-              const selected = color.id === textColorId;
-              const readable = isReadable(color.hex, shirtColor);
-              return (
-                <button
-                  key={color.id}
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  aria-label={color.name}
-                  title={
-                    readable
-                      ? color.name
-                      : `${color.name} (low contrast on this shirt)`
-                  }
-                  disabled={!readable && !selected}
-                  onClick={() => selectTextColor(color.id)}
-                  className={cn(
-                    "h-8 w-8 rounded-full border-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] disabled:opacity-35",
-                    selected
-                      ? "border-[var(--gold)] ring-2 ring-[var(--gold)]/40"
-                      : "border-[var(--stone)]/50 hover:border-[var(--gold)]/50",
-                  )}
-                  style={{ backgroundColor: color.hex }}
-                />
-              );
-            })}
+
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+              Text color
+            </p>
+            <p className="mt-1 text-xs text-[var(--walnut)]/70">{textName}</p>
+            <div
+              className="mt-2 flex flex-wrap gap-2"
+              role="listbox"
+              aria-label="Text color"
+            >
+              {TEXT_COLORS.map((color) => {
+                const selected = color.id === textColorId;
+                const readable = isReadable(color.hex, shirtColor);
+                return (
+                  <button
+                    key={color.id}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    aria-label={color.name}
+                    title={
+                      readable
+                        ? color.name
+                        : `${color.name} (low contrast on this shirt)`
+                    }
+                    disabled={!readable && !selected}
+                    onClick={() => selectTextColor(color.id)}
+                    className={cn(
+                      "h-8 w-8 rounded-full border-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)] disabled:opacity-35",
+                      selected
+                        ? "border-[var(--gold)] ring-2 ring-[var(--gold)]/40"
+                        : "border-[var(--stone)]/50 hover:border-[var(--gold)]/50",
+                    )}
+                    style={{ backgroundColor: color.hex }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+                Size
+              </p>
+              <p className="text-xs font-semibold text-[var(--lodge-blue)]">
+                {sizePct}%
+              </p>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Decrease design size"
+                onClick={() => setSize(layout.width - 0.06)}
+                className={stepBtn}
+              >
+                −
+              </button>
+              <input
+                type="range"
+                min={SIZE_MIN}
+                max={SIZE_MAX}
+                step={0.01}
+                value={layout.width}
+                aria-label="Design size"
+                onChange={(event) => setSize(Number(event.target.value))}
+                className="h-2 w-full cursor-pointer accent-[var(--gold)]"
+              />
+              <button
+                type="button"
+                aria-label="Increase design size"
+                onClick={() => setSize(layout.width + 0.06)}
+                className={stepBtn}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+              Position
+            </p>
+            <p className="mt-1 text-xs text-[var(--walnut)]/70">
+              Drag the Lodge Edition design on the shirt, or use the controls.
+            </p>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              <span aria-hidden />
+              <button
+                type="button"
+                aria-label="Move design up"
+                onClick={() => {
+                  setActiveLayer("design");
+                  nudgeDesign(0, -NUDGE);
+                }}
+                className={controlBtn}
+              >
+                Up
+              </button>
+              <span aria-hidden />
+              <button
+                type="button"
+                aria-label="Move design left"
+                onClick={() => {
+                  setActiveLayer("design");
+                  nudgeDesign(-NUDGE, 0);
+                }}
+                className={controlBtn}
+              >
+                Left
+              </button>
+              <button
+                type="button"
+                aria-label="Move design down"
+                onClick={() => {
+                  setActiveLayer("design");
+                  nudgeDesign(0, NUDGE);
+                }}
+                className={controlBtn}
+              >
+                Down
+              </button>
+              <button
+                type="button"
+                aria-label="Move design right"
+                onClick={() => {
+                  setActiveLayer("design");
+                  nudgeDesign(NUDGE, 0);
+                }}
+                className={controlBtn}
+              >
+                Right
+              </button>
+            </div>
           </div>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between gap-2">
+        {/* LODGE EMBLEM */}
+        {emblemEnabled ? (
+          <div className="space-y-4 border-t border-[var(--stone)]/40 pt-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
-              Size
+              Lodge Emblem
             </p>
-            <p className="text-xs font-semibold text-[var(--lodge-blue)]">
-              {sizePct}%
-            </p>
-          </div>
-          <div className="mt-2 flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="Decrease design size"
-              onClick={() => setSize(layout.width - 0.06)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--stone)]/60 bg-white text-lg font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              −
-            </button>
-            <input
-              type="range"
-              min={SIZE_MIN}
-              max={SIZE_MAX}
-              step={0.01}
-              value={layout.width}
-              aria-label="Design size"
-              onChange={(event) => setSize(Number(event.target.value))}
-              className="h-2 w-full cursor-pointer accent-[var(--gold)]"
-            />
-            <button
-              type="button"
-              aria-label="Increase design size"
-              onClick={() => setSize(layout.width + 0.06)}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--stone)]/60 bg-white text-lg font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              +
-            </button>
-          </div>
-        </div>
 
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
-            Position
-          </p>
-          <p className="mt-1 text-xs text-[var(--walnut)]/70">
-            Drag the design on the shirt, or use the controls.
-          </p>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            <span aria-hidden />
-            <button
-              type="button"
-              aria-label="Move design up"
-              onClick={() => nudge(0, -NUDGE)}
-              className="rounded-full border border-[var(--stone)]/60 bg-white px-3 py-2 text-xs font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              Up
-            </button>
-            <span aria-hidden />
-            <button
-              type="button"
-              aria-label="Move design left"
-              onClick={() => nudge(-NUDGE, 0)}
-              className="rounded-full border border-[var(--stone)]/60 bg-white px-3 py-2 text-xs font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              Left
-            </button>
-            <button
-              type="button"
-              aria-label="Move design down"
-              onClick={() => nudge(0, NUDGE)}
-              className="rounded-full border border-[var(--stone)]/60 bg-white px-3 py-2 text-xs font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              Down
-            </button>
-            <button
-              type="button"
-              aria-label="Move design right"
-              onClick={() => nudge(NUDGE, 0)}
-              className="rounded-full border border-[var(--stone)]/60 bg-white px-3 py-2 text-xs font-semibold text-[var(--lodge-blue)] transition hover:border-[var(--gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
-            >
-              Right
-            </button>
+            <LodgeEmblemUploadField
+              fileName={emblemFileName}
+              error={emblemError}
+              onFile={onEmblemFile}
+              onRemove={onEmblemRemove}
+            />
+
+            {emblemVisible ? (
+              <>
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+                      Size
+                    </p>
+                    <p className="text-xs font-semibold text-[var(--lodge-blue)]">
+                      {emblemSizePct}%
+                    </p>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Decrease emblem size"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        setEmblemSize(emblemLayout.width - 0.04);
+                      }}
+                      className={stepBtn}
+                    >
+                      −
+                    </button>
+                    <input
+                      type="range"
+                      min={EMBLEM_SIZE_MIN}
+                      max={EMBLEM_SIZE_MAX}
+                      step={0.01}
+                      value={emblemLayout.width}
+                      aria-label="Emblem size"
+                      onChange={(event) => {
+                        setActiveLayer("emblem");
+                        setEmblemSize(Number(event.target.value));
+                      }}
+                      className="h-2 w-full cursor-pointer accent-[var(--gold)]"
+                    />
+                    <button
+                      type="button"
+                      aria-label="Increase emblem size"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        setEmblemSize(emblemLayout.width + 0.04);
+                      }}
+                      className={stepBtn}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--walnut)]/70">
+                    Position
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--walnut)]/70">
+                    Drag the emblem on the shirt, or use the controls.
+                  </p>
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    <span aria-hidden />
+                    <button
+                      type="button"
+                      aria-label="Move emblem up"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        nudgeEmblem(0, -NUDGE);
+                      }}
+                      className={controlBtn}
+                    >
+                      Up
+                    </button>
+                    <span aria-hidden />
+                    <button
+                      type="button"
+                      aria-label="Move emblem left"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        nudgeEmblem(-NUDGE, 0);
+                      }}
+                      className={controlBtn}
+                    >
+                      Left
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Move emblem down"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        nudgeEmblem(0, NUDGE);
+                      }}
+                      className={controlBtn}
+                    >
+                      Down
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Move emblem right"
+                      onClick={() => {
+                        setActiveLayer("emblem");
+                        nudgeEmblem(NUDGE, 0);
+                      }}
+                      className={controlBtn}
+                    >
+                      Right
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
-        </div>
+        ) : null}
       </div>
     </div>
   );
