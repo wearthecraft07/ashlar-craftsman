@@ -4,10 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import {
-  ProductStage,
-  ProductVisual,
-} from "@/components/product/ProductVisual";
+import { LodgeConceptPreview } from "@/components/lodge/LodgeConceptPreview";
+import { ProductVisual } from "@/components/product/ProductVisual";
 import {
   LODGE_EMBLEM_OPTIONS,
   LODGE_QUANTITY_RANGES,
@@ -477,33 +475,12 @@ export function LodgeEditionExperience({ products }: Props) {
             Not a production proof — a visual direction only.
           </p>
           <div className="mt-4">
-            <ProductStage caption="Concept preview">
-              {product && (
-                <div className="relative w-full max-w-[280px]">
-                  <ProductVisual
-                    product={product}
-                    size="lg"
-                    decorative
-                  />
-                  <div className="pointer-events-none absolute inset-x-8 top-[38%] text-center">
-                    <p className="text-[8px] font-semibold uppercase tracking-[0.28em] text-[var(--gold)] drop-shadow">
-                      the ASHLAR CRAFTSMAN
-                    </p>
-                    <p className="mt-1 font-[family-name:var(--font-display)] text-sm leading-tight text-[var(--ivory)] drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)] sm:text-base">
-                      {(lodgeName || "Your Lodge").toUpperCase()}
-                      {lodgeNumber ? ` No. ${lodgeNumber}` : ""}
-                    </p>
-                    {(yearEstablished || city) && (
-                      <p className="mt-1 text-[9px] uppercase tracking-[0.18em] text-[var(--ivory)]/80">
-                        {yearEstablished ? `Est. ${yearEstablished}` : ""}
-                        {yearEstablished && city ? " · " : ""}
-                        {city}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </ProductStage>
+            <LodgeConceptPreview
+              lodgeName={lodgeName}
+              lodgeNumber={lodgeNumber}
+              city={city}
+              yearEstablished={yearEstablished}
+            />
           </div>
           <div className="mt-4 rounded-2xl border border-[var(--stone)]/50 bg-[var(--panel)] p-4 text-sm text-[var(--walnut)]">
             <p>
